@@ -1,7 +1,8 @@
+const {throttle} = require('lodash/function');
 const {createStore} = require('redux');
 const {default: configureStore} = require('redux-mock-store');
 
-let dispatchFn, initialState;
+let dispatchFn, initialState, store;
 
 const STATE_KEY = 'reduxState';
 
@@ -36,11 +37,6 @@ function getMockStore(state = initialState) {
 }
 
 function getStore() {
-  const extension = window.__REDUX_DEVTOOLS_EXTENSION__;
-  const enhancer = extension && extension();
-  const preloadedState = loadState();
-  const store = createStore(reducer, preloadedState, enhancer);
-  dispatchFn = store.dispatch;
   return store;
 }
 
@@ -92,8 +88,22 @@ function saveState(state, silent) {
   }
 }
 
-function setInitialState(state) {
-  initialState = state;
+function setup(theInitialState, render) {
+  initialState = theInitialState;
+
+  const extension = window.__REDUX_DEVTOOLS_EXTENSION__;
+  const enhancer = extension && extension();
+  const preloadedState = loadState();
+  store = createStore(reducer, preloadedState, enhancer);
+  dispatchFn = store.dispatch;
+
+  // See the video from Dan Abramov at
+  // https://egghead.io/lessons/
+  // javascript-redux-persisting-the-state-to-the-local-storage.
+  store.subscribe(
+    throttle(() => saveState(store.getState()), 1000)
+  );
+  store.subscribe(render);
 }
 
 module.exports = {
@@ -104,5 +114,5 @@ module.exports = {
   loadState,
   reducer, // exported to support tests
   saveState,
-  setInitialState
+  setup
 };

@@ -5,16 +5,13 @@ const {
   getStore,
   loadState,
   saveState,
-  setInitialState
+  setup
 } = require('./index');
 
 const STATE_KEY = 'reduxState';
 
 describe('redux-easy', () => {
-  const initialState = {
-  };
-
-  setInitialState(initialState);
+  let initialState;
 
   function getStorage() {
     const storage = {
@@ -28,6 +25,12 @@ describe('redux-easy', () => {
     global.sessionStorage = storage;
     return storage;
   }
+
+  beforeEach(() => {
+    initialState = {};
+    const render = () => {}; // noop
+    setup(initialState, render);
+  });
 
   test('getMockStore', () => {
     const store = getMockStore();
@@ -47,12 +50,11 @@ describe('redux-easy', () => {
   // We are trusting that Redux works and are
   // just including this test for code coverage.
   test('getStore', () => {
+    getStorage(); // mocks sessionStorage
+
     // Create a mock Redux devtools store enhancer
     // to get code coverage.
     window.__REDUX_DEVTOOLS_EXTENSION__ = next => next;
-
-    // Must call this before dispatch!
-    const store = getStore();
 
     addReducer('setEmail', (state, value) =>
       ({...state, email: value}));
@@ -61,7 +63,8 @@ describe('redux-easy', () => {
     const payload = 'foo@bar.baz';
     dispatch(type, payload);
 
-    expect(store.getState().email).toBe(payload);
+    const state = getStore().getState();
+    expect(state.email).toBe(payload);
   });
 
   test('loadState handles bad JSON', () => {
