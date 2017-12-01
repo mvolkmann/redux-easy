@@ -1,17 +1,21 @@
 const {
   addReducer,
   dispatch,
-  getMockStore,
-  getStore,
+  getState,
   loadState,
-  saveState,
-  setup
+  reduxSetup,
+  saveState
 } = require('./index');
 
 const STATE_KEY = 'reduxState';
 
 describe('redux-easy', () => {
-  let initialState;
+  const initialState = {
+    foo: 1,
+    bar: {
+      baz: 2
+    }
+  };
 
   function getStorage() {
     const storage = {
@@ -26,14 +30,10 @@ describe('redux-easy', () => {
     return storage;
   }
 
-  beforeEach(() => {
-    initialState = {};
-    const render = () => {}; // noop
-    setup(initialState, render);
-  });
+  beforeEach(() => reduxSetup({initialState, silent: true}));
 
   test('getMockStore', () => {
-    const store = getMockStore();
+    const store = reduxSetup({initialState, useMockStore: true, silent: true});
 
     const type = 'setEmail';
     const payload = 'foo@bar.baz';
@@ -49,7 +49,7 @@ describe('redux-easy', () => {
 
   // We are trusting that Redux works and are
   // just including this test for code coverage.
-  test('getStore', () => {
+  test('getState', () => {
     getStorage(); // mocks sessionStorage
 
     // Create a mock Redux devtools store enhancer
@@ -63,15 +63,13 @@ describe('redux-easy', () => {
     const payload = 'foo@bar.baz';
     dispatch(type, payload);
 
-    const state = getStore().getState();
-    expect(state.email).toBe(payload);
+    expect(getState().email).toBe(payload);
   });
 
   test('loadState handles bad JSON', () => {
     const storage = getStorage(); // mocks sessionStorage
     storage.setItem(STATE_KEY, 'bad json');
-    // This will call console.error, but that is expected.
-    const state = loadState(true);
+    const state = loadState();
     expect(state).toEqual(initialState);
   });
 
@@ -93,8 +91,7 @@ describe('redux-easy', () => {
     const state = {};
     state.circular = state;
 
-    // This will call console.error, but that is expected.
-    expect(() => saveState(state, true))
+    expect(() => saveState(state))
       .toThrow(new TypeError('Converting circular structure to JSON'));
   });
 });

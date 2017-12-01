@@ -2,7 +2,7 @@ const {throttle} = require('lodash/function');
 const {createStore} = require('redux');
 const {default: configureStore} = require('redux-mock-store');
 
-let dispatchFn, initialState, store;
+let dispatchFn, initialState, silent, store;
 
 const STATE_KEY = 'reduxState';
 
@@ -29,15 +29,8 @@ function dispatch(type, payload) {
   if (dispatchFn) dispatchFn({type, payload});
 }
 
-function getMockStore(state = initialState) {
-  const mockStore = configureStore([]);
-  const store = mockStore(state);
-  dispatchFn = store.dispatch;
-  return store;
-}
-
-function getStore() {
-  return store;
+function getState() {
+  return store.getState();
 }
 
 /**
@@ -45,7 +38,7 @@ function getStore() {
  * again each time the browser window is refreshed.
  * This function is only exported so it can be accessed from a test.
  */
-function loadState(silent) {
+function loadState() {
   const {sessionStorage} = window; // not available in tests
 
   try {
@@ -53,10 +46,11 @@ function loadState(silent) {
     if (!json) return initialState;
 
     // When parsing errors Array, change to a Set.
-    return JSON.parse(json, (key, value) =>
-      key === 'errors' ? new Set(value) : value);
+    return JSON.parse(
+      json,
+      (key, value) => (key === 'errors' ? new Set(value) : value)
+    );
   } catch (e) {
-    // istanbul ignore next
     if (!silent) console.error('redux-util loadState:', e.message);
     return initialState;
   }
@@ -74,22 +68,33 @@ function reducer(state = initialState, action) {
   throw new Error(`no reducer found for action type "${type}"`);
 }
 
-function reduxSetup(theInitialState, render) {
-  initialState = theInitialState;
+/**
+ * Pass an object with these properties:
+ * initialState: required object
+ * render: render function (optional for tests)
+ * useMockStore: optional boolean
+ * silent: optional boolean
+ *   (true to silence expected error messages in tests)
+ */
+function reduxSetup(options) {
+  ({initialState, silent} = options);
 
   const extension = window.__REDUX_DEVTOOLS_EXTENSION__;
   const enhancer = extension && extension();
   const preloadedState = loadState();
-  store = createStore(reducer, preloadedState, enhancer);
+
+  store = options.useMockStore ?
+    configureStore([])(initialState) :
+    createStore(reducer, preloadedState, enhancer);
   dispatchFn = store.dispatch;
 
-  // See the video from Dan Abramov at
-  // https://egghead.io/lessons/
-  // javascript-redux-persisting-the-state-to-the-local-storage.
-  store.subscribe(
-    throttle(() => saveState(store.getState()), 1000)
-  );
-  store.subscribe(render);
+  if (!options.useMockStore) {
+    // See the video from Dan Abramov at
+    // https://egghead.io/lessons/
+    // javascript-redux-persisting-the-state-to-the-local-storage.
+    store.subscribe(throttle(() => saveState(store.getState()), 1000));
+    if (options.render) store.subscribe(options.render);
+  }
 
   return store;
 }
@@ -98,15 +103,16 @@ function reduxSetup(theInitialState, render) {
  * This function is called by reduxSetup.
  * It is only exported so it can be accessed from a test.
  */
-function saveState(state, silent) {
+function saveState(state) {
   try {
     // When stringifying errors Set, change to an Array.
-    const json = JSON.stringify(state, (key, value) =>
-      key === 'errors' ? [...state.errors] : value);
+    const json = JSON.stringify(
+      state,
+      (key, value) => (key === 'errors' ? [...state.errors] : value)
+    );
 
     sessionStorage.setItem(STATE_KEY, json);
   } catch (e) {
-    // istanbul ignore next
     if (!silent) console.error('redux-util saveState:', e.message);
     throw e;
   }
@@ -115,8 +121,7 @@ function saveState(state, silent) {
 module.exports = {
   addReducer,
   dispatch,
-  getMockStore,
-  getStore,
+  getState,
   loadState,
   reducer, // exported to support tests
   reduxSetup,
