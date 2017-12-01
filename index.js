@@ -102,6 +102,7 @@ module.exports = {
   getMockStore,
   getStore,
   loadState,
+  reducer, // exported to support tests
   saveState,
   setInitialState
 };
