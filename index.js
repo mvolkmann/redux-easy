@@ -72,23 +72,23 @@ function reducer(state = initialState, action) {
  * Pass an object with these properties:
  * initialState: required object
  * render: render function (optional for tests)
- * useMockStore: optional boolean
+ * mock: optional boolean to use mock Redux store
  * silent: optional boolean
  *   (true to silence expected error messages in tests)
  */
 function reduxSetup(options) {
-  ({initialState, silent} = options);
+  ({initialState = {}, silent} = options);
 
   const extension = window.__REDUX_DEVTOOLS_EXTENSION__;
   const enhancer = extension && extension();
   const preloadedState = loadState();
 
-  store = options.useMockStore ?
+  store = options.mock ?
     configureStore([])(initialState) :
     createStore(reducer, preloadedState, enhancer);
   dispatchFn = store.dispatch;
 
-  if (!options.useMockStore) {
+  if (!options.mock) {
     // See the video from Dan Abramov at
     // https://egghead.io/lessons/
     // javascript-redux-persisting-the-state-to-the-local-storage.
