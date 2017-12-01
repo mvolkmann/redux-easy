@@ -2,7 +2,7 @@ const {throttle} = require('lodash/function');
 const {createStore} = require('redux');
 const {default: configureStore} = require('redux-mock-store');
 
-let dispatchFn, initialState, silent, store;
+let dispatchFn, initialState = {}, silent, store;
 
 const STATE_KEY = 'reduxState';
 
