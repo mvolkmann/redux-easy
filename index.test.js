@@ -33,7 +33,7 @@ describe('redux-easy', () => {
   beforeEach(() => reduxSetup({initialState, silent: true}));
 
   test('getMockStore', () => {
-    const store = reduxSetup({initialState, useMockStore: true, silent: true});
+    const store = reduxSetup({initialState, mock: true, silent: true});
 
     const type = 'setEmail';
     const payload = 'foo@bar.baz';
