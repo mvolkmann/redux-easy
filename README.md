@@ -76,7 +76,8 @@ import {dispatch} from 'redux-easy';
 class MyComponent extends Component {
 
   onFirstNameChange = event => {
-    const {value} = event.target; // assumes value comes from an input
+    // assumes value comes from an input
+    const {value} = event.target;
     dispatch('setFirstName', value);
   }
 
@@ -103,7 +104,7 @@ const mapState = state => {
 export default connect(mapState)(MyComponent);
 ```
 
-In Jest tests, do something like this:
+In Jest tests, do something like the following:
 
 ```js
 import {reduxSetup} from 'redux-easy';
@@ -137,5 +138,8 @@ describe('MyComponent', () => {
 
 ```
 
-That's everything to you need to know to use react-hash-route.
+That's everything to you need to know to use redux-easy.
 Code simply!
+
+If you like this, also check out
+https://www.npmjs.com/package/react-hash-route.
