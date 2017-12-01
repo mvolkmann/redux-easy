@@ -74,21 +74,7 @@ function reducer(state = initialState, action) {
   throw new Error(`no reducer found for action type "${type}"`);
 }
 
-function saveState(state, silent) {
-  try {
-    // When stringifying errors Set, change to an Array.
-    const json = JSON.stringify(state, (key, value) =>
-      key === 'errors' ? [...state.errors] : value);
-
-    sessionStorage.setItem(STATE_KEY, json);
-  } catch (e) {
-    // istanbul ignore next
-    if (!silent) console.error('redux-util saveState:', e.message);
-    throw e;
-  }
-}
-
-function setup(theInitialState, render) {
+function reduxSetup(theInitialState, render) {
   initialState = theInitialState;
 
   const extension = window.__REDUX_DEVTOOLS_EXTENSION__;
@@ -104,6 +90,26 @@ function setup(theInitialState, render) {
     throttle(() => saveState(store.getState()), 1000)
   );
   store.subscribe(render);
+
+  return store;
+}
+
+/**
+ * This function is called by reduxSetup.
+ * It is only exported so it can be accessed from a test.
+ */
+function saveState(state, silent) {
+  try {
+    // When stringifying errors Set, change to an Array.
+    const json = JSON.stringify(state, (key, value) =>
+      key === 'errors' ? [...state.errors] : value);
+
+    sessionStorage.setItem(STATE_KEY, json);
+  } catch (e) {
+    // istanbul ignore next
+    if (!silent) console.error('redux-util saveState:', e.message);
+    throw e;
+  }
 }
 
 module.exports = {
@@ -113,6 +119,6 @@ module.exports = {
   getStore,
   loadState,
   reducer, // exported to support tests
-  saveState,
-  setup
+  reduxSetup,
+  saveState
 };
