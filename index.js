@@ -58,14 +58,18 @@ function loadState() {
 
 function reducer(state = initialState, action) {
   const {payload, type} = action;
-  const fn = reducers[type];
-  if (fn) {
-    const newState = fn(state, payload) || state;
-    deepFreeze(newState);
-    return newState;
+  if (!type) {
+    throw new Error('action object passed to reducer must have type property');
   }
 
-  throw new Error(`no reducer found for action type "${type}"`);
+  const fn = reducers[type];
+  if (!fn) {
+    throw new Error(`no reducer found for action type "${type}"`);
+  }
+
+  const newState = fn(state, payload) || state;
+  deepFreeze(newState);
+  return newState;
 }
 
 /**
