@@ -3,6 +3,7 @@ const {
   dispatch,
   getState,
   loadState,
+  reducer,
   reduxSetup,
   saveState
 } = require('./index');
@@ -31,6 +32,11 @@ describe('redux-easy', () => {
   }
 
   beforeEach(() => reduxSetup({initialState, silent: true}));
+
+  test('@@INIT', () => {
+    const action = {type: '@@INIT'};
+    expect(reducer(initialState, action)).toEqual(initialState);
+  });
 
   test('getMockStore', () => {
     const store = reduxSetup({initialState, mock: true, silent: true});
@@ -66,10 +72,29 @@ describe('redux-easy', () => {
     expect(getState().email).toBe(payload);
   });
 
+  test('invalid action type', () => {
+    const action = {type: 'invalid'};
+    expect(() => reducer(undefined, action)).toThrowError(
+      `no reducer found for action type "${action.type}"`);
+  });
+
   test('loadState handles bad JSON', () => {
     const storage = getStorage(); // mocks sessionStorage
     storage.setItem(STATE_KEY, 'bad json');
     const state = loadState();
+    expect(state).toEqual(initialState);
+  });
+
+  test('missing action type', () => {
+    const action = {wrong: 'some-action'};
+    expect(() => reducer(undefined, action)).toThrowError(
+      'action object passed to reducer must have type property');
+  });
+
+  test('reducer with no state', () => {
+    addReducer('noOp', state => state);
+    const action = {type: 'noOp'};
+    const state = reducer(undefined, action);
     expect(state).toEqual(initialState);
   });
 
