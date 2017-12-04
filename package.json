@@ -1,8 +1,8 @@
 {
   "name": "redux-easy",
-  "version": "1.1.9",
+  "version": "1.1.10",
   "description": "functions that make using Redux easier",
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
     "prepublish": "babel src -d lib",
     "test": "jest src/*.js"
