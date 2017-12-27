@@ -43,7 +43,7 @@ function render() {
     <Provider store={store}>
       <App />
     </Provider>,
-    getElementById('root')
+    document.getElementById('root')
   );
 }
 
