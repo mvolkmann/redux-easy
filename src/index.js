@@ -2,7 +2,10 @@ const {throttle} = require('lodash/function');
 const {createStore} = require('redux');
 const {default: configureStore} = require('redux-mock-store');
 
-let dispatchFn, initialState = {}, silent, store;
+let dispatchFn,
+  initialState = {},
+  silent,
+  store;
 
 const STATE_KEY = 'reduxState';
 
@@ -15,12 +18,19 @@ function addReducer(type, fn) {
   reducers[type] = fn;
 }
 
-function deepFreeze(obj) {
+function deepFreeze(obj, freezing = []) {
+  if (Object.isFrozen(obj) || freezing.includes(obj)) return;
+
+  freezing.push(obj);
+
   const props = Object.getOwnPropertyNames(obj);
   for (const prop of props) {
     const value = obj[prop];
-    if (typeof value === 'object' && value !== null) deepFreeze(value);
+    if (typeof value === 'object' && value !== null) {
+      deepFreeze(value, freezing);
+    }
   }
+
   Object.freeze(obj);
 }
 
@@ -124,6 +134,7 @@ function saveState(state) {
 
 module.exports = {
   addReducer,
+  deepFreeze,
   dispatch,
   getState,
   loadState,

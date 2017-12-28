@@ -1,5 +1,6 @@
 const {
   addReducer,
+  deepFreeze,
   dispatch,
   getState,
   loadState,
@@ -36,6 +37,27 @@ describe('redux-easy', () => {
   test('@@INIT', () => {
     const action = {type: '@@INIT'};
     expect(reducer(initialState, action)).toEqual(initialState);
+  });
+
+  test('deepFreeze simple', () => {
+    const obj = {foo: 1, bar: true};
+    deepFreeze(obj);
+    expect(Object.isFrozen(obj)).toBe(true);
+  });
+
+  test('deepFreeze nested', () => {
+    const obj = {foo: 1, bar: {baz: true}};
+    deepFreeze(obj);
+    expect(Object.isFrozen(obj)).toBe(true);
+    expect(Object.isFrozen(obj.bar)).toBe(true);
+  });
+
+  test('deepFreeze cyclic', () => {
+    const obj = {foo: 1};
+    obj.bar = obj;
+    deepFreeze(obj);
+    expect(Object.isFrozen(obj)).toBe(true);
+    expect(Object.isFrozen(obj.bar)).toBe(true);
   });
 
   test('getMockStore', () => {
