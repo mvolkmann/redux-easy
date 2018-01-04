@@ -44,9 +44,10 @@ function getState() {
   return store.getState();
 }
 
-async function handleAsyncAction(promise) {
-  const newState = await promise;
-  dispatch('@@async', newState);
+function handleAsyncAction(promise) {
+  promise
+    .then(newState => dispatch('@@async', newState))
+    .catch(error => console.trace(error));
 }
 
 /**
