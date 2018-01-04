@@ -12,7 +12,7 @@ const STATE_KEY = 'reduxState';
 const reducers = {
   '@@INIT': () => null,
   '@@redux/INIT': () => null,
-  '@@async': state => state
+  '@@async': (state, payload) => payload
 };
 
 function addReducer(type, fn) {
