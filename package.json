@@ -1,9 +1,11 @@
 {
   "name": "redux-easy",
-  "version": "1.1.13",
+  "version": "1.2.0",
   "description": "functions that make using Redux easier",
   "main": "lib/index.js",
   "scripts": {
+    "format": "prettier-eslint --write src/**/*.js",
+    "lint": "eslint --quiet src --ext .js",
     "prepublish": "babel src -d lib",
     "test": "jest src/*.js"
   },
@@ -29,8 +31,11 @@
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
+    "babel-eslint": "^8.1.2",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.6.1",
-    "jest": "^21.2.1"
+    "jest": "^21.2.1",
+    "prettier": "^1.9.2",
+    "prettier-eslint-cli": "^4.7.0"
   }
 }

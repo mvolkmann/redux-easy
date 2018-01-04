@@ -11,7 +11,8 @@ const STATE_KEY = 'reduxState';
 
 const reducers = {
   '@@INIT': () => null,
-  '@@redux/INIT': () => null
+  '@@redux/INIT': () => null,
+  '@@async': state => state
 };
 
 function addReducer(type, fn) {
@@ -41,6 +42,11 @@ function dispatch(type, payload) {
 
 function getState() {
   return store.getState();
+}
+
+async function handleAsyncAction(promise) {
+  const newState = await promise;
+  dispatch('@@async', newState);
 }
 
 /**
@@ -78,6 +84,12 @@ function reducer(state = initialState, action) {
   }
 
   const newState = fn(state, payload) || state;
+
+  if (newState instanceof Promise) {
+    handleAsyncAction(newState);
+    return state;
+  }
+
   deepFreeze(newState);
   return newState;
 }
@@ -97,9 +109,9 @@ function reduxSetup(options) {
   const enhancer = extension && extension();
   const preloadedState = loadState();
 
-  store = options.mock ?
-    configureStore([])(initialState) :
-    createStore(reducer, preloadedState, enhancer);
+  store = options.mock
+    ? configureStore([])(initialState)
+    : createStore(reducer, preloadedState, enhancer);
   dispatchFn = store.dispatch;
 
   if (!options.mock) {

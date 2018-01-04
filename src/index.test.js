@@ -84,8 +84,7 @@ describe('redux-easy', () => {
     // to get code coverage.
     window.__REDUX_DEVTOOLS_EXTENSION__ = next => next;
 
-    addReducer('setEmail', (state, value) =>
-      ({...state, email: value}));
+    addReducer('setEmail', (state, value) => ({...state, email: value}));
 
     const type = 'setEmail';
     const payload = 'foo@bar.baz';
@@ -97,7 +96,8 @@ describe('redux-easy', () => {
   test('invalid action type', () => {
     const action = {type: 'invalid'};
     expect(() => reducer(undefined, action)).toThrowError(
-      `no reducer found for action type "${action.type}"`);
+      `no reducer found for action type "${action.type}"`
+    );
   });
 
   test('loadState handles bad JSON', () => {
@@ -110,7 +110,8 @@ describe('redux-easy', () => {
   test('missing action type', () => {
     const action = {wrong: 'some-action'};
     expect(() => reducer(undefined, action)).toThrowError(
-      'action object passed to reducer must have type property');
+      'action object passed to reducer must have type property'
+    );
   });
 
   test('reducer with no state', () => {
@@ -138,7 +139,8 @@ describe('redux-easy', () => {
     const state = {};
     state.circular = state;
 
-    expect(() => saveState(state))
-      .toThrow(new TypeError('Converting circular structure to JSON'));
+    expect(() => saveState(state)).toThrow(
+      new TypeError('Converting circular structure to JSON')
+    );
   });
 });

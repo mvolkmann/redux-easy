@@ -21,6 +21,8 @@ This is a set of utility functions that make it easier to use Redux.
   (on every state change, but limited to once per second).
 * Automatically reloads Redux state from `sessionStorage`
   when the browser is refreshed to avoid losing state.
+* Handles asynchronous actions in a very simple way
+  without requiring middleware configuration or thunks.
 
 ## Setup
 
@@ -137,6 +139,11 @@ describe('MyComponent', () => {
 });
 
 ```
+
+If a function passed to `addReducer` returns a `Promise`
+and a matching action is dispatched,
+this will wait for that `Promise` to resolve and then
+update the state to the resolved value of the `Promise`.
 
 That's everything to you need to know to use redux-easy.
 Code simply!
