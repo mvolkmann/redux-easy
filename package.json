@@ -1,6 +1,6 @@
 {
   "name": "redux-easy",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "functions that make using Redux easier",
   "main": "lib/index.js",
   "scripts": {
@@ -22,6 +22,9 @@
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/mvolkmann/redux-easy/issues"
+  },
+  "engines": {
+    "node": ">= 8.0"
   },
   "homepage": "https://github.com/mvolkmann/redux-easy#readme",
   "dependencies": {
