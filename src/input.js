@@ -6,10 +6,10 @@ const {string} = React.PropTypes;
 let path;
 
 class Input extends React.Component {
-  handleChange = event => {
+  handleChange(event) {
     const {value} = event.target;
     dispatch('@setPath', {path, value});
-  };
+  }
 
   render() {
     ({path} = this.props);
