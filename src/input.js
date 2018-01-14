@@ -1,8 +1,8 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {dispatch, getPathValue} from 'redux-easy';
+import {string} from 'prop-types';
 
-const {string} = React.PropTypes;
 let path;
 
 class Input extends React.Component {
