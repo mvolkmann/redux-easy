@@ -15,16 +15,17 @@ class Input extends React.Component {
     ({path} = this.props);
     return (
       <input
-        type="text"
-        {...this.props}
+        type={this.props.type}
         onChange={this.handleChange}
         value={this.props.value}
       />
     );
+    //TODO: Add this to input? {...this.props}
   }
 }
 Input.propTypes = {
   path: string.isRequired,
+  type: string.isRequired,
   value: string.isRequired
 };
 
