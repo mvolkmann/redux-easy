@@ -176,6 +176,8 @@ function setPath(state, payload) {
   return newState;
 }
 
+console.log('index.js: exporting getPathValue');
+
 module.exports = {
   Input,
   addReducer,
