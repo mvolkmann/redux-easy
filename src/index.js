@@ -41,6 +41,16 @@ function dispatch(type, payload) {
   if (dispatchFn) dispatchFn({type, payload});
 }
 
+function getPathValue(path) {
+  let value = getState();
+  const parts = path.split('/');
+  for (const part of parts) {
+    value = value[part];
+    if (value === undefined) return value;
+  }
+  return value;
+}
+
 function getState() {
   return store.getState();
 }
@@ -169,6 +179,7 @@ module.exports = {
   addReducer,
   deepFreeze,
   dispatch,
+  getPathValue,
   getState,
   loadState,
   reducer, // exported to support tests
