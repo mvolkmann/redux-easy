@@ -1,6 +1,7 @@
 const {throttle} = require('lodash/function');
 const {createStore} = require('redux');
 const {default: configureStore} = require('redux-mock-store');
+const Input = require('./input');
 
 let dispatchFn,
   initialState = {},
@@ -176,6 +177,7 @@ function setPath(state, payload) {
 }
 
 module.exports = {
+  Input,
   addReducer,
   deepFreeze,
   dispatch,
