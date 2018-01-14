@@ -6,7 +6,8 @@ const {
   loadState,
   reducer,
   reduxSetup,
-  saveState
+  saveState,
+  setPath
 } = require('./index');
 
 const STATE_KEY = 'reduxState';
@@ -142,5 +143,25 @@ describe('redux-easy', () => {
     expect(() => saveState(state)).toThrow(
       new TypeError('Converting circular structure to JSON')
     );
+  });
+
+  test('setPath', () => {
+    const state = {
+      foo: {
+        bar: {
+          baz: 1,
+          c3: 3
+        },
+        c2: 2
+      },
+      c1: 1
+    };
+    const path = 'foo/bar/baz';
+    const value = 2;
+    const newState = setPath(state, {path, value});
+    expect(newState.c1).toBe(1);
+    expect(newState.foo.c2).toBe(2);
+    expect(newState.foo.bar.c3).toBe(3);
+    expect(newState.foo.bar.baz).toBe(value);
   });
 });

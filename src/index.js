@@ -12,7 +12,8 @@ const STATE_KEY = 'reduxState';
 const reducers = {
   '@@INIT': () => null,
   '@@redux/INIT': () => null,
-  '@@async': (state, payload) => payload
+  '@@async': (state, payload) => payload,
+  '@setPath': setPath
 };
 
 function addReducer(type, fn) {
@@ -145,6 +146,25 @@ function saveState(state) {
   }
 }
 
+function setPath(state, payload) {
+  const {path, value} = payload;
+  const parts = path.split('/');
+  const lastPart = parts.pop();
+  const newState = {...state};
+
+  let obj = newState;
+  for (const part of parts) {
+    const v = obj[part];
+    const newV = {...v};
+    obj[part] = newV;
+    obj = newV;
+  }
+
+  obj[lastPart] = value;
+
+  return newState;
+}
+
 module.exports = {
   addReducer,
   deepFreeze,
@@ -153,5 +173,6 @@ module.exports = {
   loadState,
   reducer, // exported to support tests
   reduxSetup,
-  saveState
+  saveState,
+  setPath // exported to support tests
 };
