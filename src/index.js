@@ -42,6 +42,15 @@ function dispatch(type, payload) {
   if (dispatchFn) dispatchFn({type, payload});
 }
 
+function dispatchSet(path, value) {
+  if (dispatchFn) {
+    dispatchFn({
+      type: '@setPath',
+      payload: {path, value}
+    });
+  }
+}
+
 function getPathValue(path) {
   let value = getState();
   const parts = path.split('/');
@@ -176,13 +185,12 @@ function setPath(state, payload) {
   return newState;
 }
 
-console.log('index.js: exporting getPathValue');
-
 module.exports = {
   Input,
   addReducer,
   deepFreeze,
   dispatch,
+  dispatchSet,
   getPathValue,
   getState,
   loadState,
