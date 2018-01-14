@@ -6,11 +6,6 @@ const {string} = React.PropTypes;
 let path;
 
 class Input extends React.Component {
-  static propTypes = {
-    path: string.isRequired,
-    value: string.isRequired
-  };
-
   handleChange = event => {
     const {value} = event.target;
     dispatch('@setPath', {path, value});
@@ -28,6 +23,10 @@ class Input extends React.Component {
     );
   }
 }
+Input.propTypes = {
+  path: string.isRequired,
+  value: string.isRequired
+};
 
 const mapState = () => {
   const value = path ? getPathValue(path) : undefined;
