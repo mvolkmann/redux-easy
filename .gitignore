@@ -1,2 +1,4 @@
+.*.swp
+build
 lib
 node_modules
