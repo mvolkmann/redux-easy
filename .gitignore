@@ -1,4 +1,5 @@
 .*.swp
 build
+coverage
 lib
 node_modules

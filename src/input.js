@@ -1,6 +1,6 @@
 const {string} = require('prop-types');
 const React = require('react');
-const {dispatchSet, getPathValue} = require('./state');
+const {dispatchSet, getPathValue} = require('./redux-easy');
 
 class Input extends React.Component {
   handleChange = event => {

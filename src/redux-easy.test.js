@@ -2,13 +2,16 @@ const {
   addReducer,
   deepFreeze,
   dispatch,
-  getState,
+  dispatchSet,
+  getPathValue,
+  //getState,
+  handleAsyncAction,
   loadState,
   reducer,
   reduxSetup,
   saveState,
   setPath
-} = require('./index');
+} = require('./redux-easy');
 
 const STATE_KEY = 'reduxState';
 
@@ -19,7 +22,9 @@ describe('redux-easy', () => {
       baz: 2
     }
   };
+  let store;
 
+  // Mocks sessionStorage.
   function getStorage() {
     const storage = {
       getItem(key) {
@@ -33,7 +38,10 @@ describe('redux-easy', () => {
     return storage;
   }
 
-  beforeEach(() => reduxSetup({initialState, silent: true}));
+  beforeEach(() => {
+    getStorage();
+    store = reduxSetup({initialState, silent: true});
+  });
 
   test('@@INIT', () => {
     const action = {type: '@@INIT'};
@@ -61,8 +69,34 @@ describe('redux-easy', () => {
     expect(Object.isFrozen(obj.bar)).toBe(true);
   });
 
+  test('dispatch', () => {
+    // Using mock store so we can retrieve actions.
+    store = reduxSetup({initialState, mock: true, silent: true});
+    const type = '@@set';
+    const payload = {path: 'some/path', value: 'some value'};
+    dispatch(type, payload);
+    const actions = store.getActions();
+    expect(actions.length).toBe(1);
+    const [action] = actions;
+    expect(action.type).toBe(type);
+    expect(action.payload).toEqual(payload);
+  });
+
+  test('dispatchSet', () => {
+    // Using mock store so we can retrieve actions.
+    store = reduxSetup({initialState, mock: true, silent: true});
+    const path = 'some/path';
+    const value = 'some value';
+    dispatchSet(path, value);
+    const actions = store.getActions();
+    expect(actions.length).toBe(1);
+    const [action] = actions;
+    expect(action.type).toBe('@@set');
+    expect(action.payload).toEqual({path, value});
+  });
+
   test('getMockStore', () => {
-    const store = reduxSetup({initialState, mock: true, silent: true});
+    store = reduxSetup({initialState, mock: true, silent: true});
 
     const type = 'setEmail';
     const payload = 'foo@bar.baz';
@@ -76,11 +110,10 @@ describe('redux-easy', () => {
     expect(action.payload).toBe(payload);
   });
 
+  /*
   // We are trusting that Redux works and are
   // just including this test for code coverage.
   test('getState', () => {
-    getStorage(); // mocks sessionStorage
-
     // Create a mock Redux devtools store enhancer
     // to get code coverage.
     window.__REDUX_DEVTOOLS_EXTENSION__ = next => next;
@@ -91,7 +124,42 @@ describe('redux-easy', () => {
     const payload = 'foo@bar.baz';
     dispatch(type, payload);
 
-    expect(getState().email).toBe(payload);
+    expect(store.getState().email).toBe(payload);
+  });
+  */
+
+  test('getPathValue', () => {
+    let path = 'nothing/found/here';
+    let actual = getPathValue(path);
+    expect(actual).toBeUndefined();
+
+    path = 'top';
+    let value = 7;
+    dispatchSet(path, value);
+    actual = getPathValue('top');
+    expect(actual).toBe(7);
+
+    path = 'foo/bar/baz';
+    value = 'some value';
+    dispatchSet(path, value);
+    actual = getPathValue(path);
+    expect(actual).toBe(value);
+  });
+
+  test('handleAsyncAction', done => {
+    // Using mock store so we can retrieve actions.
+    store = reduxSetup({initialState, mock: true, silent: true});
+    const newState = {foo: 1, bar: true};
+    const promise = Promise.resolve(newState);
+    handleAsyncAction(promise);
+    promise.then(() => {
+      const actions = store.getActions();
+      expect(actions.length).toBe(1);
+      const [action] = actions;
+      expect(action.type).toBe('@@async');
+      expect(action.payload).toEqual(newState);
+      done();
+    });
   });
 
   test('invalid action type', () => {
@@ -102,8 +170,7 @@ describe('redux-easy', () => {
   });
 
   test('loadState handles bad JSON', () => {
-    const storage = getStorage(); // mocks sessionStorage
-    storage.setItem(STATE_KEY, 'bad json');
+    global.sessionStorage.setItem(STATE_KEY, 'bad json');
     const state = loadState();
     expect(state).toEqual(initialState);
   });
@@ -123,8 +190,6 @@ describe('redux-easy', () => {
   });
 
   test('saveState', () => {
-    getStorage(); // mocks sessionStorage
-
     const state = {foo: 1, bar: {baz: 2}};
     saveState(state);
 
@@ -133,8 +198,6 @@ describe('redux-easy', () => {
   });
 
   test('saveState handles bad JSON', () => {
-    getStorage(); // mocks sessionStorage
-
     // Create an object that contains a circular reference.
     // JSON.stringify will throw when passed this.
     const state = {};
