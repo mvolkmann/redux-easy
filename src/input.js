@@ -1,6 +1,6 @@
-import {string} from 'prop-types';
-import React from 'react';
-import {dispatchSet, getPathValue} from './index';
+const {string} = require('prop-types');
+const React = require('react');
+const {dispatchSet, getPathValue} = require('./index');
 
 class Input extends React.Component {
   handleChange = event => {
@@ -23,4 +23,4 @@ Input.propTypes = {
   type: string.isRequired
 };
 
-export default Input;
+module.exports = Input;
