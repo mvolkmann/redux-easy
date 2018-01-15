@@ -82,10 +82,10 @@ describe('redux-easy', () => {
     expect(action.payload).toEqual(payload);
   });
 
-  test('dispatchSet', () => {
+  test('dispatchSet with mock store', () => {
     // Using mock store so we can retrieve actions.
     store = reduxSetup({initialState, mock: true, silent: true});
-    const path = 'some.path';
+    const path = 'some.deep.path';
     const value = 'some value';
     dispatchSet(path, value);
     const actions = store.getActions();
@@ -93,6 +93,14 @@ describe('redux-easy', () => {
     const [action] = actions;
     expect(action.type).toBe('@@set');
     expect(action.payload).toEqual({path, value});
+  });
+
+  test('dispatchSet with real store', () => {
+    const path = 'some.deep.path';
+    const value = 'some value';
+    dispatchSet(path, value);
+    const actual = getPathValue(path);
+    expect(actual).toEqual(value);
   });
 
   test('getMockStore', () => {
