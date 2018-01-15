@@ -7,6 +7,7 @@ let dispatchFn,
   silent,
   store;
 
+const PATH_DELIMITER = '.';
 const STATE_KEY = 'reduxState';
 
 const reducers = {
@@ -52,7 +53,7 @@ function dispatchSet(path, value) {
 
 function getPathValue(path) {
   let value = store.getState();
-  const parts = path.split('/');
+  const parts = path.split(PATH_DELIMITER);
   for (const part of parts) {
     value = value[part];
     if (value === undefined) return value;
@@ -167,7 +168,7 @@ function saveState(state) {
 
 function setPath(state, payload) {
   const {path, value} = payload;
-  const parts = path.split('/');
+  const parts = path.split(PATH_DELIMITER);
   const lastPart = parts.pop();
   const newState = {...state};
 

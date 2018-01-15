@@ -73,7 +73,7 @@ describe('redux-easy', () => {
     // Using mock store so we can retrieve actions.
     store = reduxSetup({initialState, mock: true, silent: true});
     const type = '@@set';
-    const payload = {path: 'some/path', value: 'some value'};
+    const payload = {path: 'some.path', value: 'some value'};
     dispatch(type, payload);
     const actions = store.getActions();
     expect(actions.length).toBe(1);
@@ -85,7 +85,7 @@ describe('redux-easy', () => {
   test('dispatchSet', () => {
     // Using mock store so we can retrieve actions.
     store = reduxSetup({initialState, mock: true, silent: true});
-    const path = 'some/path';
+    const path = 'some.path';
     const value = 'some value';
     dispatchSet(path, value);
     const actions = store.getActions();
@@ -129,7 +129,7 @@ describe('redux-easy', () => {
   */
 
   test('getPathValue', () => {
-    let path = 'nothing/found/here';
+    let path = 'nothing.found.here';
     let actual = getPathValue(path);
     expect(actual).toBeUndefined();
 
@@ -139,7 +139,7 @@ describe('redux-easy', () => {
     actual = getPathValue('top');
     expect(actual).toBe(7);
 
-    path = 'foo/bar/baz';
+    path = 'foo.bar.baz';
     value = 'some value';
     dispatchSet(path, value);
     actual = getPathValue(path);
@@ -223,7 +223,7 @@ describe('redux-easy', () => {
       },
       c1: 1
     };
-    const path = 'foo/bar/baz';
+    const path = 'foo.bar.baz';
     const value = 2;
     const newState = setPath(state, {path, value});
     expect(newState.c1).toBe(1);
