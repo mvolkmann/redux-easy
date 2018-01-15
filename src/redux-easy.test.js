@@ -4,7 +4,7 @@ const {
   dispatch,
   dispatchSet,
   getPathValue,
-  //getState,
+  getState,
   handleAsyncAction,
   loadState,
   reducer,
@@ -144,6 +144,10 @@ describe('redux-easy', () => {
     dispatchSet(path, value);
     actual = getPathValue(path);
     expect(actual).toBe(value);
+  });
+
+  test('getState', () => {
+    expect(getState()).toEqual(store.getState());
   });
 
   test('handleAsyncAction', done => {

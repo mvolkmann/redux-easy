@@ -1,17 +1,16 @@
 {
   "name": "redux-easy",
-  "version": "1.2.19",
+  "version": "1.2.20",
   "description": "functions that make using Redux easier",
   "main": "lib/index.js",
   "scripts": {
     "clean": "rm -rf coverage lib",
-    "cover": "jest --coverage",
+    "cover": "jest src --coverage",
     "cover-open": "open coverage/lcov-report/index.html",
     "format": "prettier-eslint --write src/**/*.js",
     "lint": "eslint --quiet src --ext .js",
     "prepare": "babel src -d lib",
-    "testl": "jest lib/*.js",
-    "test": "jest src/*.js"
+    "test": "jest src"
   },
   "repository": {
     "type": "git",

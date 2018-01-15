@@ -37,8 +37,6 @@ function deepFreeze(obj, freezing = []) {
 }
 
 function dispatch(type, payload) {
-  console.log('redux-easy.js dispatch: type =', type);
-  console.log('redux-easy.js dispatch: payload =', payload);
   // dispatchFn is not set in some tests.
   if (dispatchFn) dispatchFn({type, payload});
 }
@@ -60,6 +58,10 @@ function getPathValue(path) {
     if (value === undefined) return value;
   }
   return value;
+}
+
+function getState() {
+  return store.getState();
 }
 
 function handleAsyncAction(promise) {
@@ -193,6 +195,7 @@ module.exports = {
   dispatch,
   dispatchSet,
   getPathValue,
+  getState,
   handleAsyncAction, // exported to support tests
   loadState,
   reducer, // exported to support tests
