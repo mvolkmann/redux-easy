@@ -1,6 +1,6 @@
 import {string} from 'prop-types';
 import React from 'react';
-import {dispatchSet, getPathValue} from 'redux-easy';
+import {dispatchSet, getPathValue} from './index';
 
 class Input extends React.Component {
   handleChange = event => {
