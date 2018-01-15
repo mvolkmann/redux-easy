@@ -1,7 +1,7 @@
 const {throttle} = require('lodash/function');
 const {createStore} = require('redux');
 const {default: configureStore} = require('redux-mock-store');
-const Input = require('./input');
+import Input from './input';
 
 let dispatchFn,
   initialState = {},
