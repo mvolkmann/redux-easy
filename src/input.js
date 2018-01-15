@@ -1,6 +1,6 @@
 const {string} = require('prop-types');
 const React = require('react');
-const {dispatchSet, getPathValue} = require('./index');
+const {dispatchSet, getPathValue} = require('./state');
 
 class Input extends React.Component {
   handleChange = event => {

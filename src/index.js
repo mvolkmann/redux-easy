@@ -1,10 +1,11 @@
 const {throttle} = require('lodash/function');
 const {createStore} = require('redux');
 const {default: configureStore} = require('redux-mock-store');
-import Input from './input';
 
-let dispatchFn,
-  initialState = {},
+const Input = require('./input');
+const {dispatch, dispatchSet, getPathValue, setStore} = require('./state');
+
+let initialState = {},
   silent,
   store;
 
@@ -37,37 +38,9 @@ function deepFreeze(obj, freezing = []) {
   Object.freeze(obj);
 }
 
-function dispatch(type, payload) {
-  // dispatchFn is not set in some tests.
-  if (dispatchFn) dispatchFn({type, payload});
-}
-
-function dispatchSet(path, value) {
-  if (dispatchFn) {
-    dispatchFn({
-      type: '@setPath',
-      payload: {path, value}
-    });
-  }
-}
-
-function getPathValue(path) {
-  let value = getState();
-  const parts = path.split('/');
-  for (const part of parts) {
-    value = value[part];
-    if (value === undefined) return value;
-  }
-  return value;
-}
-
-function getState() {
-  return store.getState();
-}
-
 function handleAsyncAction(promise) {
   promise
-    .then(newState => dispatch('@@async', newState))
+    .then(newState => store.dispatch('@@async', newState))
     .catch(error => console.trace(error));
 }
 
@@ -134,7 +107,7 @@ function reduxSetup(options) {
   store = options.mock
     ? configureStore([])(initialState)
     : createStore(reducer, preloadedState, enhancer);
-  dispatchFn = store.dispatch;
+  setStore(store);
 
   if (!options.mock) {
     // See the video from Dan Abramov at
@@ -192,7 +165,6 @@ module.exports = {
   dispatch,
   dispatchSet,
   getPathValue,
-  getState,
   loadState,
   reducer, // exported to support tests
   reduxSetup,
