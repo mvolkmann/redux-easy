@@ -163,10 +163,12 @@ and dispatch an action where the value is the payload.
 An alternative is to use the provided `Input` component
 as follows:
 
+```js
 <Input path="user.firstName" />
+``
 
-The `type` property defaults to `text`,
-but can be set to any valid value including `checkbox`.
+The `type` property defaults to `'text'`,
+but can be set to any valid value including `'checkbox'`.
 
 The value used by the `input` is the state value at the specified path.
 When the user changes the value, this component uses
