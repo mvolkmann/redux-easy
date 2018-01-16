@@ -7,15 +7,17 @@ This is a set of utility functions that make it easier to use Redux.
 * Don't need string constants for action types.
 * Don't need to write reducer functions containing switch statements
   that switch on an action type string.
-* Don't need to use the connect function from react-redux
+* Don't need to use the `connect` function from react-redux
   just to get access to the one `dispatch` function.
-* Actions can be dispatched by passing an action type and a payload
-  to the `dispatch` function without creating an action object.
+* Actions can be dispatched by passing an action type string
+  and a payload to the `dispatch` function
+  without creating an action object.
 * Each action is handled by a single "reducer" function
   that takes a state object and a payload,
   making them very simple to write.
-* Simple actions that merely set a property value
-  can be dispatched without writing reducer function.
+* Simple actions that merely set a property value in the state
+  can be dispatched without writing reducer functions
+  (see `dispatchSet`).
 * The complexity of nested/combined reducers can be bypassed.
 * Automatically freezes all objects in the Redux state
   so any attempts to modify them are caught.
