@@ -10,7 +10,7 @@ class Input extends React.Component {
   };
 
   render() {
-    const {path, type} = this.props;
+    const {path, type = 'text'} = this.props;
 
     const isCheckbox = type === 'checkbox';
     const propName = isCheckbox ? 'checked' : 'value';

@@ -11,9 +11,11 @@ This is a set of utility functions that make it easier to use Redux.
   just to get access to the one `dispatch` function.
 * Actions can be dispatched by passing an action type and a payload
   to the `dispatch` function without creating an action object.
-* Each action is handled by a single function
+* Each action is handled by a single "reducer" function
   that takes a state object and a payload,
   making them very simple to write.
+* Simple actions that merely set a property value
+  can be dispatched without writing reducer function.
 * The complexity of nested/combined reducers can be bypassed.
 * Automatically freezes all objects in the Redux state
   so any attempts to modify them are caught.
@@ -67,6 +69,10 @@ addReducer('setFirstName', (state, firstName) => {
 });
 ```
 
+If the application requires a large number of reducer functions
+they can be implemented in multiple files,
+perhaps grouping related reducer functions together
+
 In components that need to dispatch actions,
 do something like the following:
 
@@ -81,6 +87,11 @@ class MyComponent extends Component {
     // assumes value comes from an input
     const {value} = event.target;
     dispatch('setFirstName', value);
+
+    // If the setFirstName action just sets a value in the state,
+    // perhaps user.firstName, the following can be used instead.
+    // There is no need to implement a reducer function.
+    dispatchSet('user.firstName', value);
   }
 
   render() {
@@ -105,6 +116,8 @@ const mapState = state => {
 
 export default connect(mapState)(MyComponent);
 ```
+
+## Tests
 
 In Jest tests, do something like the following:
 
@@ -140,9 +153,28 @@ describe('MyComponent', () => {
 
 ```
 
+## Inputs Tied to a State Path
+
+It is common to have `input` elements with `onChange` handlers
+that get the value from `event.target.value`
+and dispatch an action where the value is the payload.
+An alternative is to use the provided `Input` component
+as follows:
+
+<Input path="user.firstName" />
+
+The `type` property defaults to `text`,
+but can be set to any valid value including `checkbox`.
+
+The value used by the `input` is the state value at the specified path.
+When the user changes the value, this component uses
+the provided `dispatchSet` function to update the state.
+
+## Asynchronous Actions
+
 If a function passed to `addReducer` returns a `Promise`
 and a matching action is dispatched,
-this will wait for that `Promise` to resolve and then
+it will wait for that `Promise` to resolve and then
 update the state to the resolved value of the `Promise`.
 
 That's everything to you need to know to use redux-easy.
