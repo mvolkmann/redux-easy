@@ -25,7 +25,7 @@ class Input extends React.Component {
 
 Input.propTypes = {
   path: string.isRequired,
-  type: string.isRequired
+  type: string
 };
 
 module.exports = Input;
