@@ -6,7 +6,9 @@ class Input extends React.Component {
   handleChange = event => {
     const {checked, value} = event.target;
     const {path, type} = this.props;
-    dispatchSet(path, type === 'checkbox' ? checked : value);
+    const v =
+      type === 'checkbox' ? checked : type === 'number' ? Number(value) : value;
+    dispatchSet(path, v);
   };
 
   render() {
