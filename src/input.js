@@ -18,8 +18,9 @@ class Input extends React.Component {
     const propName = isCheckbox ? 'checked' : 'value';
 
     let value = getPathValue(path);
-    const isNumber = type === 'number';
-    if (value === undefined) value = isCheckbox ? false : isNumber ? 0 : '';
+    //const isNumber = type === 'number';
+    //if (value === undefined) value = isCheckbox ? false : isNumber ? 0 : '';
+    if (value === undefined) value = isCheckbox ? false : '';
     const inputProps = {...this.props, [propName]: value};
 
     return <input {...inputProps} onChange={this.handleChange} />;
