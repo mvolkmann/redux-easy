@@ -6,8 +6,12 @@ class Input extends React.Component {
   handleChange = event => {
     const {checked, value} = event.target;
     const {path, type} = this.props;
+
+    // Horrible Prettier formatting of ternaries!
     const v =
-      type === 'checkbox' ? checked : type === 'number' ? Number(value) : value;
+      type === 'checkbox'
+        ? checked
+        : type === 'number' && value.length ? Number(value) : value;
     dispatchSet(path, v);
   };
 
