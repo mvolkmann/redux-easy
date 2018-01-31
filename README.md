@@ -181,6 +181,30 @@ and a matching action is dispatched,
 it will wait for that `Promise` to resolve and then
 update the state to the resolved value of the `Promise`.
 
+Here's an example of such a reducer function:
+```js
+addReducer('myAsyncThing', (state, payload) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      // Data in payload would typically be used
+      // in the following call to an asynchronous function.
+      const result = await fetch('some-url');
+
+      // Build the new state using the current state
+      // obtained by calling getState() rather than
+      // the state passed to the reducer function
+      // because it may have changed
+      // since the asynchronous activity began.
+      const newState = {...getState(), someKey: result};
+
+      resolve(newState);
+    } catch (e) {
+      reject(e);
+    }
+  });
+});
+```
+
 That's everything to you need to know to use redux-easy.
 Code simply!
 
