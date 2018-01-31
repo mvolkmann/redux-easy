@@ -165,7 +165,7 @@ as follows:
 
 ```js
 <Input path="user.firstName" />
-``
+```
 
 The `type` property defaults to `'text'`,
 but can be set to any valid value including `'checkbox'`.
