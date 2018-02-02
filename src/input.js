@@ -7,11 +7,13 @@ class Input extends React.Component {
     const {checked, value} = event.target;
     const {path, type} = this.props;
 
-    // Horrible Prettier formatting of ternaries!
-    const v =
-      type === 'checkbox'
-        ? checked
-        : type === 'number' && value.length ? Number(value) : value;
+    let v = value;
+    if (type === 'checkbox') {
+      v = checked;
+    } else if (type === 'number' || type === 'range') {
+      if (value.length) v = Number(value);
+    }
+
     dispatchSet(path, v);
   };
 
@@ -22,8 +24,6 @@ class Input extends React.Component {
     const propName = isCheckbox ? 'checked' : 'value';
 
     let value = getPathValue(path);
-    //const isNumber = type === 'number';
-    //if (value === undefined) value = isCheckbox ? false : isNumber ? 0 : '';
     if (value === undefined) value = isCheckbox ? false : '';
     const inputProps = {...this.props, [propName]: value};
 
