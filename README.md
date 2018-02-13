@@ -174,6 +174,9 @@ The value used by the `input` is the state value at the specified path.
 When the user changes the value, this component uses
 the provided `dispatchSet` function to update the state.
 
+To perform additional processing of changes such as validation,
+supply an `onChange` prop that refers to a function.
+
 ## Asynchronous Actions
 
 If a function passed to `addReducer` returns a `Promise`

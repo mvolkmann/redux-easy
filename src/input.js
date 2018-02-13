@@ -1,11 +1,11 @@
-const {string} = require('prop-types');
+const {func, string} = require('prop-types');
 const React = require('react');
 const {dispatchSet, getPathValue} = require('./redux-easy');
 
 class Input extends React.Component {
   handleChange = event => {
     const {checked, value} = event.target;
-    const {path, type} = this.props;
+    const {onChange, path, type} = this.props;
 
     let v = value;
     if (type === 'checkbox') {
@@ -15,6 +15,8 @@ class Input extends React.Component {
     }
 
     dispatchSet(path, v);
+
+    if (onChange) onChange(value);
   };
 
   render() {
@@ -32,6 +34,7 @@ class Input extends React.Component {
 }
 
 Input.propTypes = {
+  onChange: func,
   path: string.isRequired,
   type: string
 };
