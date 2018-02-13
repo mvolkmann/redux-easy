@@ -16,7 +16,7 @@ class Input extends React.Component {
 
     dispatchSet(path, v);
 
-    if (onChange) onChange(value);
+    if (onChange) onChange(event);
   };
 
   render() {
