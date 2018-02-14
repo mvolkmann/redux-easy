@@ -3,6 +3,9 @@ const React = require('react');
 const {dispatchSet, getPathValue} = require('./redux-easy');
 
 class Input extends React.Component {
+
+  inputRef = null;
+
   handleChange = event => {
     const {checked, value} = event.target;
     const {onChange, path, type} = this.props;
@@ -29,7 +32,11 @@ class Input extends React.Component {
     if (value === undefined) value = isCheckbox ? false : '';
     const inputProps = {...this.props, [propName]: value};
 
-    return <input {...inputProps} onChange={this.handleChange} />;
+    return <input
+      {...inputProps}
+      onChange={this.handleChange}
+      ref={input => this.inputRef = input}
+    />;
   }
 }
 
