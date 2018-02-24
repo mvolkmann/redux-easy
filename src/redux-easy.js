@@ -1,5 +1,6 @@
 import {throttle} from 'lodash/function';
-import {connect, createStore} from 'redux';
+import {createStore} from 'redux';
+import {connect} from 'react-redux';
 import configureStore from 'redux-mock-store';
 
 let dispatchFn,
