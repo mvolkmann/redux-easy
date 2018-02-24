@@ -1,6 +1,8 @@
 import {throttle} from 'lodash/function';
+import ReactDOM from 'react-dom';
+// ESLint says Provide is never used, but it is!
+import {connect, Provider} from 'react-redux';
 import {createStore} from 'redux';
-import {connect} from 'react-redux';
 import configureStore from 'redux-mock-store';
 
 let dispatchFn,
@@ -121,25 +123,27 @@ export function reducer(state = initialState, action) {
 
 /**
  * Pass an object with these properties:
+ * component: top component to render
+ * target: element where component should be rendered
  * initialState: required object
- * render: render function (optional for tests)
  * mock: optional boolean to use mock Redux store
  * silent: optional boolean
  *   (true to silence expected error messages in tests)
  */
 export function reduxSetup(options) {
+  const {component, mock, target} = options;
   ({initialState = {}, silent} = options);
 
   const extension = window.__REDUX_DEVTOOLS_EXTENSION__;
   const enhancer = extension && extension();
   const preloadedState = loadState();
 
-  store = options.mock
+  store = mock
     ? configureStore([])(initialState)
     : createStore(reducer, preloadedState, enhancer);
   setStore(store);
 
-  if (!options.mock) {
+  if (!mock) {
     // See the video from Dan Abramov at
     // https://egghead.io/lessons/
     // javascript-redux-persisting-the-state-to-the-local-storage.
@@ -147,7 +151,20 @@ export function reduxSetup(options) {
     if (options.render) store.subscribe(options.render);
   }
 
-  return store;
+  if (component && target) {
+    function render() {
+      ReactDOM.render(
+        <Provider store={store}>
+          {component}
+        </Provider>,
+        target
+      );
+    }
+
+    render(); // initial render
+  }
+
+  return store; // used in tests
 }
 
 /**

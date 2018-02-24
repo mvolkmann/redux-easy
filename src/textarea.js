@@ -1,7 +1,6 @@
 import {func, string} from 'prop-types';
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
-import {dispatchSet, getPathValue} from './redux-easy';
+import {Component} from 'react';
+import {dispatchSet, getPathValue, watch} from './redux-easy';
 
 let thePath;
 
@@ -44,8 +43,4 @@ TextArea.propTypes = {
   value: string
 };
 
-function mapState(state) {
-  return thePath ? {value: getPathValue(thePath)} : {};
-}
-
-export default connect(mapState)(TextArea);
+export default watch(TextArea, {value: thePath});
