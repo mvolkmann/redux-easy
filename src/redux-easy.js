@@ -194,9 +194,9 @@ export function setStore(s) {
   dispatchFn = store.dispatch;
 }
 
-export function watch(watchMap, component) {
+export function watch(component, watchMap) {
   function mapState() {
-    return Object.entries(watchMap).map(
+    return Object.entries(watchMap).reduce(
       (props, [name, path]) => {
         props[name] = getPathValue(path);
         return props;
