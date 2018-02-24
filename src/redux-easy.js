@@ -1,6 +1,6 @@
-const {throttle} = require('lodash/function');
-const {createStore} = require('redux');
-const {default: configureStore} = require('redux-mock-store');
+import {throttle} from 'lodash/function';
+import {createStore} from 'redux';
+import configureStore from 'redux-mock-store';
 
 let dispatchFn,
   initialState = {},
@@ -17,11 +17,11 @@ const reducers = {
   '@@set': setPath
 };
 
-function addReducer(type, fn) {
+export function addReducer(type, fn) {
   reducers[type] = fn;
 }
 
-function deepFreeze(obj, freezing = []) {
+export function deepFreeze(obj, freezing = []) {
   if (Object.isFrozen(obj) || freezing.includes(obj)) return;
 
   freezing.push(obj);
@@ -37,12 +37,12 @@ function deepFreeze(obj, freezing = []) {
   Object.freeze(obj);
 }
 
-function dispatch(type, payload) {
+export function dispatch(type, payload) {
   // dispatchFn is not set in some tests.
   if (dispatchFn) dispatchFn({type, payload});
 }
 
-function dispatchSet(path, value) {
+export function dispatchSet(path, value) {
   if (dispatchFn) {
     dispatchFn({
       type: '@@set',
@@ -51,7 +51,7 @@ function dispatchSet(path, value) {
   }
 }
 
-function getPathValue(path) {
+export function getPathValue(path) {
   let value = store.getState();
   const parts = path.split(PATH_DELIMITER);
   for (const part of parts) {
@@ -61,11 +61,12 @@ function getPathValue(path) {
   return value;
 }
 
-function getState() {
+export function getState() {
   return store.getState();
 }
 
-function handleAsyncAction(promise) {
+// exported to support tests
+export function handleAsyncAction(promise) {
   promise
     .then(newState => store.dispatch({type: '@@async', payload: newState}))
     .catch(error => console.trace(error));
@@ -76,7 +77,7 @@ function handleAsyncAction(promise) {
  * again each time the browser window is refreshed.
  * This function is only exported so it can be accessed from a test.
  */
-function loadState() {
+export function loadState() {
   const {sessionStorage} = window; // not available in tests
 
   try {
@@ -94,7 +95,8 @@ function loadState() {
   }
 }
 
-function reducer(state = initialState, action) {
+// exported to support tests
+export function reducer(state = initialState, action) {
   const {payload, type} = action;
   if (!type) {
     throw new Error('action object passed to reducer must have type property');
@@ -124,7 +126,7 @@ function reducer(state = initialState, action) {
  * silent: optional boolean
  *   (true to silence expected error messages in tests)
  */
-function reduxSetup(options) {
+export function reduxSetup(options) {
   ({initialState = {}, silent} = options);
 
   const extension = window.__REDUX_DEVTOOLS_EXTENSION__;
@@ -151,7 +153,7 @@ function reduxSetup(options) {
  * This function is called by reduxSetup.
  * It is only exported so it can be accessed from a test.
  */
-function saveState(state) {
+export function saveState(state) {
   try {
     // When stringifying errors Set, change to an Array.
     const json = JSON.stringify(
@@ -166,7 +168,8 @@ function saveState(state) {
   }
 }
 
-function setPath(state, payload) {
+// exported to support tests
+export function setPath(state, payload) {
   const {path, value} = payload;
   const parts = path.split(PATH_DELIMITER);
   const lastPart = parts.pop();
@@ -185,23 +188,7 @@ function setPath(state, payload) {
   return newState;
 }
 
-function setStore(s) {
+export function setStore(s) {
   store = s;
   dispatchFn = store.dispatch;
 }
-
-module.exports = {
-  addReducer,
-  deepFreeze,
-  dispatch,
-  dispatchSet,
-  getPathValue,
-  getState,
-  handleAsyncAction, // exported to support tests
-  loadState,
-  reducer, // exported to support tests
-  reduxSetup,
-  saveState,
-  setPath, // exported to support tests
-  setStore
-};

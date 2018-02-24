@@ -1,10 +1,13 @@
-const {func, string} = require('prop-types');
-const React = require('react');
-const {dispatchSet, getPathValue} = require('./redux-easy');
+import {func, string} from 'prop-types';
+import React, {Component} from 'react';
+import {connect} from 'react-redux';
+import {dispatchSet, getPathValue} from './redux-easy';
 
-class Input extends React.Component {
+let thePath;
 
-  inputRef = null;
+class Input extends Component {
+
+  ref = null;
 
   handleChange = event => {
     const {checked, value} = event.target;
@@ -24,26 +27,36 @@ class Input extends React.Component {
 
   render() {
     const {path, type = 'text'} = this.props;
+    thePath = path; // used by mapState below
 
+    let {value} = this.props;
+    if (!value) value = getPathValue(path);
     const isCheckbox = type === 'checkbox';
-    const propName = isCheckbox ? 'checked' : 'value';
-
-    let value = getPathValue(path);
     if (value === undefined) value = isCheckbox ? false : '';
-    const inputProps = {...this.props, [propName]: value};
 
-    return <input
-      {...inputProps}
-      onChange={this.handleChange}
-      ref={input => this.inputRef = input}
-    />;
+    const propName = isCheckbox ? 'checked' : 'value';
+    const inputProps = {...this.props, [propName]: value};
+    delete inputProps.dispatch;
+
+    return (
+      <input
+        {...inputProps}
+        onChange={this.handleChange}
+        ref={input => this.ref = input}
+      />
+    );
   }
 }
 
 Input.propTypes = {
   onChange: func,
   path: string.isRequired,
-  type: string
+  type: string,
+  value: string
 };
 
-module.exports = Input;
+function mapState(state) {
+  return thePath ? {value: getPathValue(thePath)} : {};
+}
+
+export default connect(mapState)(Input);

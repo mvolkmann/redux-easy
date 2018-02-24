@@ -1,21 +1,4 @@
-const Input = require('./input');
-const {
-  addReducer,
-  dispatch,
-  dispatchSet,
-  getPathValue,
-  getState,
-  reducer,
-  reduxSetup
-} = require('./redux-easy');
-
-module.exports = {
-  Input,
-  addReducer,
-  dispatch,
-  dispatchSet,
-  getPathValue,
-  getState,
-  reducer,
-  reduxSetup
-};
+export {default as Input} from './input';
+export {default as Select} from './select';
+export {default as TextArea} from './textarea';
+export * from './redux-easy';

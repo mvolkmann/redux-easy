@@ -4,29 +4,29 @@ This is a set of utility functions that make it easier to use Redux.
 
 ## Benefits
 
-* Don't need string constants for action types.
-* Don't need to write reducer functions containing switch statements
-  that switch on an action type string.
-* Don't need to use the `connect` function from react-redux
-  just to get access to the one `dispatch` function.
-* Actions can be dispatched by passing an action type string
-  and a payload to the `dispatch` function
-  without creating an action object.
-* Each action is handled by a single "reducer" function
-  that takes a state object and a payload,
-  making them very simple to write.
+* No string constants are needed for action types.
+* A reducer function that switches on action type is not needed.
+* The dispatch function is accessed through a simple import rather
+  than using react-redux `connect` function and `mapDispatchToProps`.
+* Actions can be dispatched by providing just a type and payload
+  rather than an action object.
+* Each action type is handled by a single reducer function
+  that is registered by action type and is simple to write.
 * Simple actions that merely set a property value in the state
-  can be dispatched without writing reducer functions
-  (see `dispatchSet`).
+  (the most common kind) can be dispatched without writing
+  reducer functions (see `dispatchSet`).
+* Objects in the Redux state are automatically frozen
+  to prevent accidental state modification.
+* Asynchronous actions are handled in a simple way
+  without requiring middleware or thunks.
 * The complexity of nested/combined reducers can be bypassed.
-* Automatically freezes all objects in the Redux state
+* All objects in the Redux state are automatically frozen
   so any attempts to modify them are caught.
-* Automatically saves Redux state to `sessionStorage`
+* Redux state is automatically saved in `sessionStorage`
   (on every state change, but limited to once per second).
-* Automatically reloads Redux state from `sessionStorage`
+* Redux state is automatically loaded from `sessionStorage`
   when the browser is refreshed to avoid losing state.
-* Handles asynchronous actions in a very simple way
-  without requiring middleware configuration or thunks.
+* Integration with redux-devtools is automatically provided.
 
 ## Setup
 
@@ -34,8 +34,11 @@ In the topmost source file, likely named `index.js`,
 add the following which assumes the topmost component is `App`:
 
 ```js
+import React from 'react';
+import ReactDOM from 'react-dom';
 import {Provider} from 'react-redux';
 import {reduxSetup} from 'redux-easy';
+import App from './App';
 import './reducers'; // described next
 
 const initialState = {
@@ -155,12 +158,12 @@ describe('MyComponent', () => {
 
 ```
 
-## Inputs Tied to a State Path
+## Form Elements Tied to a State Path
 
-It is common to have `input` elements with `onChange` handlers
-that get the value from `event.target.value`
+It is common to have `input`, `select`, and `textarea` elements
+with `onChange` handlers that get their value from `event.target.value`
 and dispatch an action where the value is the payload.
-An alternative is to use the provided `Input` component
+An alternative is to use the provided `Input`, `Select`, and `TextArea` components
 as follows:
 
 ```js
@@ -176,6 +179,18 @@ the provided `dispatchSet` function to update the state.
 
 To perform additional processing of changes such as validation,
 supply an `onChange` prop that refers to a function.
+
+```js
+<TextArea path="feedback.comment" />
+```
+
+```js
+<Select path="user.favoriteColor">
+  <option>red</option>
+  <option>green</option>
+  <option>blue</option>
+</Select>
+```
 
 ## Asynchronous Actions
 
