@@ -1,5 +1,5 @@
 import {throttle} from 'lodash/function';
-import {createStore} from 'redux';
+import {connect, createStore} from 'redux';
 import configureStore from 'redux-mock-store';
 
 let dispatchFn,
@@ -191,4 +191,17 @@ export function setPath(state, payload) {
 export function setStore(s) {
   store = s;
   dispatchFn = store.dispatch;
+}
+
+export function watch(watchMap, component) {
+  function mapState() {
+    return Object.entries(watchMap).map(
+      (props, [name, path]) => {
+        props[name] = getPathValue(path);
+        return props;
+      },
+      {});
+  }
+
+  return connect(mapState)(component);
 }
