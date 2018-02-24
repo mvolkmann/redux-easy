@@ -83,8 +83,7 @@ do something like the following:
 
 ```js
 import React, {Component} from 'react';
-import {connect} from 'react-redux';
-import {dispatch} from 'redux-easy';
+import {dispatch, watch} from 'redux-easy';
 
 class MyComponent extends Component {
 
@@ -114,12 +113,11 @@ class MyComponent extends Component {
   }
 }
 
-const mapState = state => {
-  const {user} = state;
-  return {user};
-};
-
-export default connect(mapState)(MyComponent);
+// The second argument to watch is a map
+// of property names to state paths.
+export default watch(MyComponent, {
+  user: 'user'
+});
 ```
 
 ## Tests
