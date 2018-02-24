@@ -1,4 +1,6 @@
 import {throttle} from 'lodash/function';
+// ESLint says React is never used, but it is needed!
+import React from 'react';
 import ReactDOM from 'react-dom';
 // ESLint says Provide is never used, but it is!
 import {connect, Provider} from 'react-redux';
