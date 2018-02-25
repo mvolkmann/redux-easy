@@ -26,6 +26,12 @@ This is a set of utility functions that make it easier to use Redux.
   when the browser is refreshed to avoid losing state.
 * Integration with redux-devtools is automatically configured.
 
+## Example app
+
+See https://github.com/mvolkmann/redux-easy-greeting-card.
+For comparison, the same app using standard Redux is at
+https://github.com/mvolkmann/redux-greeting-card.
+
 ## Setup
 
 In the topmost source file, likely named `index.js`,
