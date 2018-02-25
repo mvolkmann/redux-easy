@@ -1,6 +1,6 @@
 import {arrayOf, shape, string} from 'prop-types';
 import React, {Component} from 'react';
-import {dispatchSet, getPathValue, watch} from 'redux-easy';
+import {dispatchSet, getPathValue, watch} from './redux-easy';
 
 const watchMap = {};
 
