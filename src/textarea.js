@@ -1,8 +1,8 @@
 import {func, string} from 'prop-types';
-import {Component} from 'react';
+import React, {Component} from 'react';
 import {dispatchSet, getPathValue, watch} from './redux-easy';
 
-let thePath;
+const watchMap = {value: ''};
 
 class TextArea extends Component {
 
@@ -17,7 +17,7 @@ class TextArea extends Component {
 
   render() {
     const {path} = this.props;
-    thePath = path; // used by mapState below
+    watchMap.value = path;
 
     let {value} = this.props;
     if (!value) value = getPathValue(path);
@@ -43,4 +43,4 @@ TextArea.propTypes = {
   value: string
 };
 
-export default watch(TextArea, {value: thePath});
+export default watch(TextArea, watchMap);

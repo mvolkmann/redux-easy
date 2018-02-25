@@ -1,23 +1,25 @@
 import {func, string} from 'prop-types';
-import {Component} from 'react';
+import React, {Component} from 'react';
 import {dispatchSet, getPathValue, watch} from './redux-easy';
 
-let thePath;
+const watchMap = {value: ''};
 
 class Select extends Component {
 
+  path = ''
   ref = null;
 
   handleChange = event => {
     const {value} = event.target;
-    const {onChange, path} = this.props;
-    dispatchSet(path, value);
+    const {onChange, path: thePath} = this.props;
+    this.path = thePath;
+    dispatchSet(thePath, value);
     if (onChange) onChange(event);
   };
 
   render() {
     const {children, path} = this.props;
-    thePath = path; // used by mapState below
+    watchMap.value = path;
 
     let {value} = this.props;
     if (!value) value = getPathValue(path);
@@ -45,4 +47,4 @@ Select.propTypes = {
   value: string
 };
 
-export default watch(Select, {value: thePath});
+export default watch(Select, watchMap);

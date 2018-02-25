@@ -1,8 +1,8 @@
 import {func, string} from 'prop-types';
-import {Component} from 'react';
+import React, {Component} from 'react';
 import {dispatchSet, getPathValue, watch} from './redux-easy';
 
-let thePath;
+const watchMap = {value: ''};
 
 class Input extends Component {
 
@@ -26,7 +26,7 @@ class Input extends Component {
 
   render() {
     const {path, type = 'text'} = this.props;
-    thePath = path; // used by mapState below
+    watchMap.value = path;
 
     let {value} = this.props;
     if (!value) value = getPathValue(path);
@@ -54,4 +54,4 @@ Input.propTypes = {
   value: string
 };
 
-export default watch(Input, {value: thePath});
+export default watch(Input, watchMap);

@@ -57,6 +57,8 @@ export function dispatchSet(path, value) {
 }
 
 export function getPathValue(path) {
+  if (!path) return undefined;
+
   let value = store.getState();
   const parts = path.split(PATH_DELIMITER);
   for (const part of parts) {
