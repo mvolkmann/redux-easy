@@ -6,8 +6,8 @@ This is a set of utility functions that make it easier to use Redux.
 
 * No string constants are needed for action types.
 * A reducer function that switches on action type is not needed.
-* The dispatch function is accessed through a simple import rather
-  than using react-redux `connect` function and `mapDispatchToProps`.
+* The dispatch function is accessed through a simple import rather than
+  using the react-redux `connect` and `mapDispatchToProps` functions.
 * Actions can be dispatched by providing just a type and payload
   rather than an action object.
 * Each action type is handled by a single reducer function
@@ -15,18 +15,16 @@ This is a set of utility functions that make it easier to use Redux.
 * Simple actions that merely set a property value in the state
   (the most common kind) can be dispatched without writing
   reducer functions (see `dispatchSet`).
-* Objects in the Redux state are automatically frozen
+* All objects in the Redux state are automatically frozen
   to prevent accidental state modification.
 * Asynchronous actions are handled in a simple way
   without requiring middleware or thunks.
 * The complexity of nested/combined reducers can be bypassed.
-* All objects in the Redux state are automatically frozen
-  so any attempts to modify them are caught.
 * Redux state is automatically saved in `sessionStorage`
   (on every state change, but limited to once per second).
 * Redux state is automatically loaded from `sessionStorage`
   when the browser is refreshed to avoid losing state.
-* Integration with redux-devtools is automatically provided.
+* Integration with redux-devtools is automatically configured.
 
 ## Setup
 
@@ -59,15 +57,21 @@ import {addReducer} from 'redux-easy';
 // function to be invoked when that action type is dispatched.
 // These functions must return the new state
 // and cannot modify the existing state.
-addReducer('setFirstName', (state, firstName) => {
+addReducer('addToAge', (state, years) => {
   const {user} = state;
-  return {...state, user: {...user, firstName}};
+  return {
+    ...state,
+    user: {
+      ...user,
+      age: user.age + years
+    }
+  };
 });
 ```
 
-If the application requires a large number of reducer functions
+If the application requires a large number of reducer functions,
 they can be implemented in multiple files,
-perhaps grouping related reducer functions together
+perhaps grouping related reducer functions together.
 
 In components that need to dispatch actions,
 do something like the following:
@@ -85,7 +89,7 @@ class MyComponent extends Component {
 
     // If the setFirstName action just sets a value in the state,
     // perhaps user.firstName, the following can be used instead.
-    // There is no need to implement a reducer function.
+    // There is no need to implement simple reducer functions.
     dispatchSet('user.firstName', value);
   }
 
@@ -105,46 +109,11 @@ class MyComponent extends Component {
 }
 
 // The second argument to watch is a map
-// of property names to state paths.
+// of property names to state paths
+// where path parts are separated by periods.
 export default watch(MyComponent, {
   user: 'user'
 });
-```
-
-## Tests
-
-In Jest tests, do something like the following:
-
-```js
-import {reduxSetup} from 'redux-easy';
-
-const initialState = {
-  user: {firstName: ''}
-};
-
-describe('MyComponent', () => {
-  test('handle firstName change', () => {
-    const store = reduxSetup({initialState, mock: true});
-    const jsx = (
-      <Provider store={store}>
-        <Login />
-      </Provider>
-    );
-    const wrapper = mount(jsx);
-    const firstNameInput = wrapper.find('.first-name-input');
-
-    const firstName = 'Joe';
-    firstNameInput.simulate('change', {target: {value: firstName}});
-
-    const actions = store.getActions();
-    expect(actions.length).toBe(1);
-
-    const [action] = actions;
-    expect(action.type).toBe('setFirstName');
-    expect(action.payload).toBe(firstName);
-  });
-});
-
 ```
 
 ## Form Elements Tied to a State Path
@@ -155,6 +124,8 @@ and dispatch an action where the value is the payload.
 An alternative is to use the provided `Input`, `Select`, and `TextArea` components
 as follows:
 
+HTML `input` elements can be replaced by the `Input` component.
+For example,
 ```js
 <Input path="user.firstName" />
 ```
@@ -163,16 +134,20 @@ The `type` property defaults to `'text'`,
 but can be set to any valid value including `'checkbox'`.
 
 The value used by the `input` is the state value at the specified path.
-When the user changes the value, this component uses
-the provided `dispatchSet` function to update the state.
+When the user changes the value, this component
+updates the value at that path in the state.
 
 To perform additional processing of changes such as validation,
 supply an `onChange` prop that refers to a function.
 
+HTML `textarea` elements can be replaced by the `TextArea` component.
+For example,
 ```js
 <TextArea path="feedback.comment" />
 ```
 
+HTML `select` elements can be replaced by the `Select` component.
+For example,
 ```js
 <Select path="user.favoriteColor">
   <option>red</option>
@@ -210,6 +185,42 @@ addReducer('myAsyncThing', (state, payload) => {
     }
   });
 });
+```
+
+## Tests
+
+In Jest tests, do something like the following:
+
+```js
+import {reduxSetup} from 'redux-easy';
+
+const initialState = {
+  user: {firstName: ''}
+};
+
+describe('MyComponent', () => {
+  test('handle firstName change', () => {
+    const store = reduxSetup({initialState, mock: true});
+    const jsx = (
+      <Provider store={store}>
+        <Login />
+      </Provider>
+    );
+    const wrapper = mount(jsx);
+    const firstNameInput = wrapper.find('.first-name-input');
+
+    const firstName = 'Joe';
+    firstNameInput.simulate('change', {target: {value: firstName}});
+
+    const actions = store.getActions();
+    expect(actions.length).toBe(1);
+
+    const [action] = actions;
+    expect(action.type).toBe('setFirstName');
+    expect(action.payload).toBe(firstName);
+  });
+});
+
 ```
 
 That's everything to you need to know to use redux-easy.
