@@ -129,14 +129,16 @@ export function reducer(state = initialState, action) {
  * Pass an object with these properties:
  * component: top component to render
  * target: element where component should be rendered
+ *   (defaults to element with id "root")
  * initialState: required object
  * mock: optional boolean to use mock Redux store
  * silent: optional boolean
  *   (true to silence expected error messages in tests)
  */
 export function reduxSetup(options) {
-  const {component, mock, target} = options;
+  const {component, mock} = options;
   ({initialState = {}, silent} = options);
+  const target = options.target || document.getElementById('root');
 
   const extension = window.__REDUX_DEVTOOLS_EXTENSION__;
   const enhancer = extension && extension();

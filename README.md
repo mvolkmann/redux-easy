@@ -47,11 +47,9 @@ const initialState = {
   user: {firstName: ''}
 };
 
-reduxSetup({
-  component: <App />,
-  initialState,
-  target: document.getElementById('root')
-});
+// The specified component is rendered in the element with id "root"
+// unles the "target" option is specified.
+reduxSetup({component: <App />, initialState});
 ```
 
 Create `reducers.js` containing something like the following:
