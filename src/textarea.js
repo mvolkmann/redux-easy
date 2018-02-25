@@ -8,6 +8,10 @@ class TextArea extends Component {
 
   ref = null;
 
+  componentWillMount() {
+    watchMap.value = this.props.path;
+  }
+
   handleChange = event => {
     const {value} = event.target;
     const {onChange, path} = this.props;
@@ -17,11 +21,9 @@ class TextArea extends Component {
 
   render() {
     const {path} = this.props;
-    watchMap.value = path;
 
     let {value} = this.props;
     if (!value) value = getPathValue(path);
-    if (value === undefined) value = '';
 
     const textAreaProps = {...this.props, value};
     delete textAreaProps.dispatch;
@@ -39,7 +41,6 @@ class TextArea extends Component {
 TextArea.propTypes = {
   onChange: func,
   path: string.isRequired,
-  type: string,
   value: string
 };
 

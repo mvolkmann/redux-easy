@@ -6,8 +6,11 @@ const watchMap = {value: ''};
 
 class Select extends Component {
 
-  path = ''
   ref = null;
+
+  componentWillMount() {
+    watchMap.value = this.props.path;
+  }
 
   handleChange = event => {
     const {value} = event.target;
@@ -19,7 +22,6 @@ class Select extends Component {
 
   render() {
     const {children, path} = this.props;
-    watchMap.value = path;
 
     let {value} = this.props;
     if (!value) value = getPathValue(path);
@@ -43,7 +45,6 @@ class Select extends Component {
 Select.propTypes = {
   onChange: func,
   path: string.isRequired,
-  type: string,
   value: string
 };
 

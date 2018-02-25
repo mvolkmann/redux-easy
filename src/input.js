@@ -8,6 +8,10 @@ class Input extends Component {
 
   ref = null;
 
+  componentWillMount() {
+    watchMap.value = this.props.path;
+  }
+
   handleChange = event => {
     const {checked, value} = event.target;
     const {onChange, path, type} = this.props;
@@ -26,10 +30,10 @@ class Input extends Component {
 
   render() {
     const {path, type = 'text'} = this.props;
-    watchMap.value = path;
 
     let {value} = this.props;
     if (!value) value = getPathValue(path);
+
     const isCheckbox = type === 'checkbox';
     if (value === undefined) value = isCheckbox ? false : '';
 
