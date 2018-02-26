@@ -80,8 +80,6 @@ export function handleAsyncAction(promise) {
     .catch(error => console.trace(error));
 }
 
-export const id = () => 'redux-easy-' + (++lastId);
-
 /**
  * This is called on app startup and
  * again each time the browser window is refreshed.
@@ -162,12 +160,7 @@ export function reduxSetup(options) {
 
   if (component && target) {
     function render() {
-      ReactDOM.render(
-        <Provider store={store}>
-          {component}
-        </Provider>,
-        target
-      );
+      ReactDOM.render(<Provider store={store}>{component}</Provider>, target);
     }
 
     render(); // initial render
@@ -220,28 +213,32 @@ export function setStore(s) {
   dispatchFn = store.dispatch;
 }
 
-// This is a map from component ids to their watchMap.
-const watchMapMap = {};
-
-export function addWatchMap(id, watchMap) {
-  if (id) watchMapMap[id] = watchMap;
-}
-
 export function watch(component, watchMap) {
   function mapState(state, ownProps) {
-    if (!watchMap) {
-      const {id} = ownProps;
-      if (id) watchMap = watchMapMap[id];
-      if (!watchMap) return {};
+    const {path, pathList} = ownProps;
+
+    // Components that have path or pathList properties
+    // do not use a watchMap.
+
+    if (path) return {value: getPathValue(path, state)};
+
+    if (pathList) {
+      return {
+        values: pathList.map(path => getPathValue(path, state))
+      };
     }
 
-    const newProps = Object.entries(watchMap).reduce(
-      (props, [name, path]) => {
+    if (watchMap) {
+      const entries = Object.entries(watchMap);
+      return entries.reduce((props, [name, path]) => {
         props[name] = getPathValue(path, state);
         return props;
-      },
-      {});
-    return newProps;
+      }, {});
+    }
+
+    throw new Error(
+      'watched components must have a path, pathList, or watchMap prop'
+    );
   }
 
   return connect(mapState)(component);

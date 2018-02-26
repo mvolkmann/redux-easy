@@ -2,15 +2,9 @@ import {func, string} from 'prop-types';
 import React, {Component} from 'react';
 import {dispatchSet, getPathValue, watch} from './redux-easy';
 
-const watchMap = {value: ''};
-
 class Select extends Component {
 
   ref = null;
-
-  componentWillMount() {
-    watchMap.value = this.props.path;
-  }
 
   handleChange = event => {
     const {value} = event.target;
@@ -48,4 +42,4 @@ Select.propTypes = {
   value: string
 };
 
-export default watch(Select, watchMap);
+export default watch(Select);

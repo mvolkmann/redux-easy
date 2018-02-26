@@ -1,6 +1,6 @@
 import {arrayOf, shape, string} from 'prop-types';
 import React, {Component} from 'react';
-import {addWatchMap, dispatchSet, getPathValue, watch} from './redux-easy';
+import {dispatchSet, getPathValue, watch} from './redux-easy';
 
 const getName = index => 'rb' + index;
 
@@ -11,11 +11,6 @@ const getName = index => 'rb' + index;
  * Specify a `className` prop to enable styling the radioButtons.
  */
 class RadioButtons extends Component {
-
-  componentWillMount() {
-    const {id, path} = this.props;
-    addWatchMap(id, {value: path});
-  }
 
   handleChange = event =>
     dispatchSet(this.props.path, event.target.value);

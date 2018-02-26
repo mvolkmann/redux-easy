@@ -1,17 +1,10 @@
 import {bool, func, number, oneOfType, string} from 'prop-types';
 import React, {Component} from 'react';
-import {addWatchMap, dispatchSet, getPathValue, watch} from './redux-easy';
+import {dispatchSet, getPathValue, watch} from './redux-easy';
 
 class Input extends Component {
 
   ref = null;
-
-  //componentWillReceiveProps(nextProps) {
-  //  const {id, path} = nextProps;
-  componentWillMount() {
-    const {id, path} = this.props;
-    addWatchMap(id, {value: path});
-  }
 
   handleChange = event => {
     const {checked, value} = event.target;

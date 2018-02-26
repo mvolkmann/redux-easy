@@ -1,15 +1,10 @@
 import {func, string} from 'prop-types';
 import React, {Component} from 'react';
-import {addWatchMap, dispatchSet, getPathValue, watch} from './redux-easy';
+import {dispatchSet, getPathValue, watch} from './redux-easy';
 
 class TextArea extends Component {
 
   ref = null;
-
-  componentWillMount() {
-    const {id, path} = this.props;
-    addWatchMap(id, {value: path});
-  }
 
   handleChange = event => {
     const {value} = event.target;
