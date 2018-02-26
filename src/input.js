@@ -1,4 +1,4 @@
-import {func, string} from 'prop-types';
+import {boolean, func, number, oneOf, string} from 'prop-types';
 import React, {Component} from 'react';
 import {dispatchSet, getPathValue, watch} from './redux-easy';
 
@@ -32,7 +32,7 @@ class Input extends Component {
     const {path, type = 'text'} = this.props;
 
     let {value} = this.props;
-    if (!value) value = String(getPathValue(path));
+    if (!value) value = getPathValue(path);
 
     const isCheckbox = type === 'checkbox';
     if (value === undefined) value = isCheckbox ? false : '';
@@ -55,7 +55,7 @@ Input.propTypes = {
   onChange: func,
   path: string.isRequired,
   type: string,
-  value: string
+  value: oneOf(string, number, boolean)
 };
 
 export default watch(Input, watchMap);

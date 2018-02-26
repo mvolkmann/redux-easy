@@ -23,7 +23,7 @@ class TextArea extends Component {
     const {path} = this.props;
 
     let {value} = this.props;
-    if (!value) value = String(getPathValue(path));
+    if (!value) value = getPathValue(path);
 
     const textAreaProps = {...this.props, value};
     delete textAreaProps.dispatch;
