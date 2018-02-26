@@ -9,6 +9,7 @@ import configureStore from 'redux-mock-store';
 
 let dispatchFn,
   initialState = {},
+  lastId = 0,
   silent,
   store;
 
@@ -56,10 +57,10 @@ export function dispatchSet(path, value) {
   }
 }
 
-export function getPathValue(path) {
+export function getPathValue(path, state) {
   if (!path) return undefined;
 
-  let value = store.getState();
+  let value = state || store.getState();
   const parts = path.split(PATH_DELIMITER);
   for (const part of parts) {
     value = value[part];
@@ -78,6 +79,8 @@ export function handleAsyncAction(promise) {
     .then(newState => store.dispatch({type: '@@async', payload: newState}))
     .catch(error => console.trace(error));
 }
+
+export const id = () => 'redux-easy-' + (++lastId);
 
 /**
  * This is called on app startup and
@@ -217,14 +220,28 @@ export function setStore(s) {
   dispatchFn = store.dispatch;
 }
 
+// This is a map from component ids to their watchMap.
+const watchMapMap = {};
+
+export function addWatchMap(id, watchMap) {
+  if (id) watchMapMap[id] = watchMap;
+}
+
 export function watch(component, watchMap) {
-  function mapState() {
-    return Object.entries(watchMap).reduce(
+  function mapState(state, ownProps) {
+    if (!watchMap) {
+      const {id} = ownProps;
+      if (id) watchMap = watchMapMap[id];
+      if (!watchMap) return {};
+    }
+
+    const newProps = Object.entries(watchMap).reduce(
       (props, [name, path]) => {
-        props[name] = getPathValue(path);
+        props[name] = getPathValue(path, state);
         return props;
       },
       {});
+    return newProps;
   }
 
   return connect(mapState)(component);

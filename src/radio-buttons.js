@@ -1,8 +1,6 @@
 import {arrayOf, shape, string} from 'prop-types';
 import React, {Component} from 'react';
-import {dispatchSet, getPathValue, watch} from './redux-easy';
-
-const watchMap = {value: ''};
+import {addWatchMap, dispatchSet, getPathValue, watch} from './redux-easy';
 
 const getName = index => 'rb' + index;
 
@@ -15,7 +13,8 @@ const getName = index => 'rb' + index;
 class RadioButtons extends Component {
 
   componentWillMount() {
-    watchMap.value = this.props.path;
+    const {id, path} = this.props;
+    addWatchMap(id, {value: path});
   }
 
   handleChange = event =>
@@ -64,4 +63,4 @@ RadioButtons.propTypes = {
   value: string
 };
 
-export default watch(RadioButtons, watchMap);
+export default watch(RadioButtons);

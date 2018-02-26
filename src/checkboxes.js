@@ -1,8 +1,6 @@
 import {arrayOf, shape, string} from 'prop-types';
 import React, {Component} from 'react';
-import {dispatchSet, getPathValue, watch} from './redux-easy';
-
-const watchMap = {};
+import {addWatchMap, dispatchSet, getPathValue, watch} from './redux-easy';
 
 const getName = index => 'cb' + index;
 
@@ -15,13 +13,18 @@ const getName = index => 'cb' + index;
 class Checkboxes extends Component {
 
   componentWillMount() {
-    this.props.list.forEach((obj, index) => {
-      watchMap[getName(index)] = obj.path;
-    });
+    const {id} = this.props;
+    const watchMap = this.props.list.map(
+      (map, obj, index) => {
+        map[getName(index)] = obj.path;
+        return map;
+      },
+      {});
+    addWatchMap(id, watchMap);
   }
 
   handleChange = (name, event) =>
-    dispatchSet(watchMap[name], event.target.checked);
+    dispatchSet(this.watchMap[name], event.target.checked);
 
   render() {
     const {className, list} = this.props;
@@ -60,4 +63,4 @@ Checkboxes.propTypes = {
   ).isRequired
 };
 
-export default watch(Checkboxes, watchMap);
+export default watch(Checkboxes);

@@ -1,15 +1,14 @@
 import {func, string} from 'prop-types';
 import React, {Component} from 'react';
-import {dispatchSet, getPathValue, watch} from './redux-easy';
-
-const watchMap = {value: ''};
+import {addWatchMap, dispatchSet, getPathValue, watch} from './redux-easy';
 
 class TextArea extends Component {
 
   ref = null;
 
   componentWillMount() {
-    watchMap.value = this.props.path;
+    const {id, path} = this.props;
+    addWatchMap(id, {value: path});
   }
 
   handleChange = event => {
@@ -44,4 +43,4 @@ TextArea.propTypes = {
   value: string
 };
 
-export default watch(TextArea, watchMap);
+export default watch(TextArea);

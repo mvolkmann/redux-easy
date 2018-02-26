@@ -1,15 +1,16 @@
 import {bool, func, number, oneOfType, string} from 'prop-types';
 import React, {Component} from 'react';
-import {dispatchSet, getPathValue, watch} from './redux-easy';
-
-const watchMap = {value: ''};
+import {addWatchMap, dispatchSet, getPathValue, watch} from './redux-easy';
 
 class Input extends Component {
 
   ref = null;
 
+  //componentWillReceiveProps(nextProps) {
+  //  const {id, path} = nextProps;
   componentWillMount() {
-    watchMap.value = this.props.path;
+    const {id, path} = this.props;
+    addWatchMap(id, {value: path});
   }
 
   handleChange = event => {
@@ -58,4 +59,4 @@ Input.propTypes = {
   value: oneOfType([string, number, bool])
 };
 
-export default watch(Input, watchMap);
+export default watch(Input);
