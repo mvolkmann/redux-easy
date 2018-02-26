@@ -1,4 +1,4 @@
-import {boolean, func, number, oneOf, string} from 'prop-types';
+import {boolean, func, number, oneOfType, string} from 'prop-types';
 import React, {Component} from 'react';
 import {dispatchSet, getPathValue, watch} from './redux-easy';
 
@@ -55,7 +55,7 @@ Input.propTypes = {
   onChange: func,
   path: string.isRequired,
   type: string,
-  value: oneOf(string, number, boolean)
+  value: oneOfType([string, number, boolean])
 };
 
 export default watch(Input, watchMap);
