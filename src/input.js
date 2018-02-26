@@ -32,7 +32,7 @@ class Input extends Component {
     const {path, type = 'text'} = this.props;
 
     let {value} = this.props;
-    if (!value) value = getPathValue(path);
+    if (!value) value = String(getPathValue(path));
 
     const isCheckbox = type === 'checkbox';
     if (value === undefined) value = isCheckbox ? false : '';
