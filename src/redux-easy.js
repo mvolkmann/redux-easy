@@ -217,6 +217,7 @@ export function watch(component, watchMap) {
     if (watchMap) {
       const entries = Object.entries(watchMap);
       return entries.reduce((props, [name, path]) => {
+        if (!path) path = name;
         props[name] = getPathValue(path, state);
         return props;
       }, {});
