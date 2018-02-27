@@ -12,8 +12,11 @@ const getName = index => 'cb' + index;
  */
 class Checkboxes extends Component {
 
-  handleChange = (name, event) =>
-    dispatchSet(this.watchMap[name], event.target.checked);
+  handleChange = (text, event) => {
+    const {pathList} = this.props;
+    const {path} = pathList.find(obj => obj.text === text);
+    dispatchSet(path, event.target.checked);
+  };
 
   render() {
     const {className, pathList, values} = this.props;
@@ -27,7 +30,7 @@ class Checkboxes extends Component {
           <input
             className={name}
             checked={checked}
-            onChange={e => this.handleChange(name, e)}
+            onChange={e => this.handleChange(text, e)}
             type="checkbox"
           />
           <label>{text}</label>

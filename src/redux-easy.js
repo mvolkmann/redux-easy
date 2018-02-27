@@ -9,7 +9,6 @@ import configureStore from 'redux-mock-store';
 
 let dispatchFn,
   initialState = {},
-  lastId = 0,
   silent,
   store;
 
@@ -215,19 +214,6 @@ export function setStore(s) {
 
 export function watch(component, watchMap) {
   function mapState(state, ownProps) {
-    const {path, pathList} = ownProps;
-
-    // Components that have path or pathList properties
-    // do not use a watchMap.
-
-    if (path) return {value: getPathValue(path, state)};
-
-    if (pathList) {
-      return {
-        values: pathList.map(path => getPathValue(path, state))
-      };
-    }
-
     if (watchMap) {
       const entries = Object.entries(watchMap);
       return entries.reduce((props, [name, path]) => {
@@ -236,8 +222,18 @@ export function watch(component, watchMap) {
       }, {});
     }
 
+    const {path, pathList} = ownProps;
+
+    if (path) return {value: getPathValue(path, state)};
+
+    if (pathList) {
+      return {
+        values: pathList.map(obj => getPathValue(obj.path, state))
+      };
+    }
+
     throw new Error(
-      'watched components must have a path, pathList, or watchMap prop'
+      'watched components must have a watchMap, path, or pathList prop'
     );
   }
 
