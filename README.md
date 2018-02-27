@@ -112,11 +112,14 @@ class MyComponent extends Component {
   }
 }
 
-// The second argument to watch is a map
-// of property names to state paths
-// where path parts are separated by periods.
+// The second argument to watch is a map of property names
+// to state paths where path parts are separated by periods.
+// For example, zip: 'user.address.zipCode'.
+// When the value for a prop comes from a top-level state property
+// with the same name, the path can be an empty string, null, or undefined
+// and watch will use the prop name as the path.
 export default watch(MyComponent, {
-  user: 'user'
+  user: '' // path will be 'user'
 });
 ```
 
@@ -159,6 +162,42 @@ For example,
   <option>blue</option>
 </Select>
 ```
+
+For a set of radio buttons, use the RadioButtons component.
+For example,
+```js
+<RadioButtons
+  className="flavor"
+  list={radioButtonList}
+  path="favoriteFlavor"
+/>
+```
+where radioButtonList is set as follows:
+```js
+const radioButtonList = [
+  {text: 'Chocolate', value: 'choc'},
+  {text: 'Strawberry', value: 'straw'},
+  {text: 'Vanilla', value: 'van'}
+];
+```
+When a radio button is clicked the state property `favoriteFlavor`
+will be set the value of that radio button.
+
+For a set of checkboxes, use the Checkboxes component.
+For example,
+```js
+<Checkboxes className="colors" pathList={checkboxList} />
+```
+where checkboxList is set as follows:
+```js
+const checkboxList = [
+  {text: 'Red', path: 'color.red'},
+  {text: 'Green', path: 'color.green'},
+  {text: 'Blue', path: 'color.blue'}
+];
+```
+When a checkbox is clicked the boolean value at the corresponding path
+will be toggled between false and true.
 
 ## Asynchronous Actions
 
