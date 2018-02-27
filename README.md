@@ -116,14 +116,14 @@ class MyComponent extends Component {
 // to state paths where path parts are separated by periods.
 // For example, zip: 'user.address.zipCode'.
 // When the value for a prop comes from a top-level state property
-// with the same name, the path can be an empty string, null, or undefined
-// and watch will use the prop name as the path.
+// with the same name, the path can be an empty string, null, or
+// undefined and `watch` will use the prop name as the path.
 export default watch(MyComponent, {
   user: '' // path will be 'user'
 });
 ```
 
-## Form Elements Tied to a State Path
+## Form Elements Tied to State Paths
 
 It is common to have `input`, `select`, and `textarea` elements
 with `onChange` handlers that get their value from `event.target.value`
@@ -162,8 +162,10 @@ For example,
   <option>blue</option>
 </Select>
 ```
+If the `option` elements have a value attribute, that value
+will be used instead of the text inside the `option`.
 
-For a set of radio buttons, use the RadioButtons component.
+For a set of radio buttons, use the `RadioButtons` component.
 For example,
 ```js
 <RadioButtons
@@ -183,7 +185,7 @@ const radioButtonList = [
 When a radio button is clicked the state property `favoriteFlavor`
 will be set the value of that radio button.
 
-For a set of checkboxes, use the Checkboxes component.
+For a set of checkboxes, use the `Checkboxes` component.
 For example,
 ```js
 <Checkboxes className="colors" pathList={checkboxList} />
