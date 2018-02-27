@@ -47,8 +47,8 @@ const initialState = {
   user: {firstName: ''}
 };
 
-// The specified component is rendered in the element with id "root"
-// unles the "target" option is specified.
+// The specified component is rendered in the element with
+// id "root" unless the "target" option is specified.
 reduxSetup({component: <App />, initialState});
 ```
 
