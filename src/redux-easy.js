@@ -12,6 +12,7 @@ let dispatchFn,
   silent,
   store;
 
+const SET = '@@set';
 const PATH_DELIMITER = '.';
 const STATE_KEY = 'reduxState';
 
@@ -19,7 +20,7 @@ const reducers = {
   '@@INIT': () => null,
   '@@redux/INIT': () => null,
   '@@async': (state, payload) => payload,
-  '@@set': setPath
+  [SET]: setPath
 };
 
 export function addReducer(type, fn) {
@@ -50,7 +51,7 @@ export function dispatch(type, payload) {
 export function dispatchSet(path, value) {
   if (dispatchFn) {
     dispatchFn({
-      type: '@@set',
+      type: SET + ' ' + path,
       payload: {path, value}
     });
   }
@@ -104,17 +105,19 @@ export function loadState() {
 
 // exported to support tests
 export function reducer(state = initialState, action) {
-  const {payload, type} = action;
+  let {type} = action;
   if (!type) {
     throw new Error('action object passed to reducer must have type property');
   }
+
+  if (type.startsWith(SET)) type = SET;
 
   const fn = reducers[type];
   if (!fn) {
     throw new Error(`no reducer found for action type "${type}"`);
   }
 
-  const newState = fn(state, payload) || state;
+  const newState = fn(state, action.payload) || state;
 
   if (newState instanceof Promise) {
     handleAsyncAction(newState);
