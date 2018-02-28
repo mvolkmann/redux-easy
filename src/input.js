@@ -23,7 +23,7 @@ class Input extends Component {
   };
 
   render() {
-    const {path, type = 'text'} = this.props;
+    const {onEnter, path, type = 'text'} = this.props;
 
     let {value} = this.props;
     if (!value) value = getPathValue(path);
@@ -34,6 +34,13 @@ class Input extends Component {
     const propName = isCheckbox ? 'checked' : 'value';
     const inputProps = {...this.props, [propName]: value};
     delete inputProps.dispatch;
+
+    if (onEnter) {
+      inputProps.onKeyPress = event => {
+        if (event.key === 'Enter') onEnter();
+      };
+      delete inputProps.onEnter;
+    }
 
     return (
       <input
@@ -46,9 +53,11 @@ class Input extends Component {
 }
 
 Input.propTypes = {
-  onChange: func,
-  path: string.isRequired,
-  type: string,
+  onChange: func, // called on every change to value
+  onEnter: func, // called if user presses enter key
+  path: string.isRequired, // state path that is updated
+  type: string, // type of the HTML input
+  // optional current value (obtained from state at path if not specified)
   value: oneOfType([string, number, bool])
 };
 
