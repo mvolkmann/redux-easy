@@ -1,4 +1,4 @@
-import {func, string} from 'prop-types';
+import {func, number, oneOfType, string} from 'prop-types';
 import React, {Component} from 'react';
 import {dispatchSet, getPathValue, watch} from './redux-easy';
 
@@ -39,7 +39,7 @@ class Select extends Component {
 Select.propTypes = {
   onChange: func,
   path: string.isRequired,
-  value: string
+  value: oneOfType([number, string])
 };
 
 export default watch(Select);
