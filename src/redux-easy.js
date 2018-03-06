@@ -122,7 +122,7 @@ export const getState = () => store.getState();
 // exported to support tests
 export const handleAsyncAction = promise =>
   promise
-    .then(newState => store.dispatch({type: '@@async', payload: newState}))
+    .then(newState => dispatch('@@async', newState))
     .catch(error => console.trace(error));
 
 /**
