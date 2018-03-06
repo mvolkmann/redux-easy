@@ -27,9 +27,7 @@ const reducers = {
   [SET]: setPath
 };
 
-export function addReducer(type, fn) {
-  reducers[type] = fn;
-}
+export const addReducer = (type, fn) => reducers[type] = fn;
 
 export function deepFreeze(obj, freezing = []) {
   if (Object.isFrozen(obj) || freezing.includes(obj)) return;
@@ -65,39 +63,46 @@ export function dispatchFilter(path, filterFn) {
     throw new Error('dispatchFilter must be passed a function');
   }
 
-  // dispatchFn is not set in some tests.
-  if (!dispatchFn) return;
-
-  dispatchFn({
-    type: FILTER + ' ' + path,
-    payload: {path, value: filterFn}
-  });
+  dispatch(FILTER + ' ' + path, {path, value: filterFn});
 }
 
 /**
  * This adds elements to the end of the array at path.
  */
-export function dispatchPush(path, ...elements) {
-  // dispatchFn is not set in some tests.
-  if (!dispatchFn) return;
-
-  dispatchFn({
-    type: PUSH + ' ' + path,
-    payload: {path, value: elements}
-  });
-}
+export const dispatchPush = (path, ...elements) =>
+  dispatch(PUSH + ' ' + path, {path, value: elements});
 
 /**
  * This sets the value found at path to a given value.
  */
-export function dispatchSet(path, value) {
-  // dispatchFn is not set in some tests.
-  if (!dispatchFn) return;
+export const dispatchSet = (path, value) =>
+  dispatch(SET + ' ' + path, {path, value});
 
-  dispatchFn({
-    type: SET + ' ' + path,
-    payload: {path, value}
-  });
+// exported to support tests
+export function filterPath(state, payload) {
+  const {path, value} = payload;
+  const parts = path.split(PATH_DELIMITER);
+  const lastPart = parts.pop();
+  const newState = {...state};
+
+  let obj = newState;
+  for (const part of parts) {
+    const v = obj[part];
+    const newV = {...v};
+    obj[part] = newV;
+    obj = newV;
+  }
+
+  const currentValue = obj[lastPart];
+  if (!Array.isArray(currentValue)) {
+    throw new Error(
+      `dispatchFilter can only be used on arrays and ${path} is not`);
+  }
+
+  const filterFn = value;
+  obj[lastPart] = currentValue.filter(filterFn);
+
+  return newState;
 }
 
 export function getPathValue(path, state) {
@@ -112,16 +117,13 @@ export function getPathValue(path, state) {
   return value;
 }
 
-export function getState() {
-  return store.getState();
-}
+export const getState = () => store.getState();
 
 // exported to support tests
-export function handleAsyncAction(promise) {
+export const handleAsyncAction = promise =>
   promise
     .then(newState => store.dispatch({type: '@@async', payload: newState}))
     .catch(error => console.trace(error));
-}
 
 /**
  * This is called on app startup and
@@ -144,6 +146,32 @@ export function loadState() {
     if (!silent) console.error('redux-util loadState:', e.message);
     return initialState;
   }
+}
+
+// exported to support tests
+export function pushPath(state, payload) {
+  const {path, value} = payload;
+  const parts = path.split(PATH_DELIMITER);
+  const lastPart = parts.pop();
+  const newState = {...state};
+
+  let obj = newState;
+  for (const part of parts) {
+    const v = obj[part];
+    const newV = {...v};
+    obj[part] = newV;
+    obj = newV;
+  }
+
+  const currentValue = obj[lastPart];
+  if (!Array.isArray(currentValue)) {
+    throw new Error(
+      `dispatchPush can only be used on arrays and ${path} is not`);
+  }
+
+  obj[lastPart] = [...currentValue, ...value];
+
+  return newState;
 }
 
 // exported to support tests
@@ -236,59 +264,6 @@ export function saveState(state) {
     if (!silent) console.error('redux-util saveState:', e.message);
     throw e;
   }
-}
-
-// exported to support tests
-export function filterPath(state, payload) {
-  const {path, value} = payload;
-  const parts = path.split(PATH_DELIMITER);
-  const lastPart = parts.pop();
-  const newState = {...state};
-
-  let obj = newState;
-  for (const part of parts) {
-    const v = obj[part];
-    const newV = {...v};
-    obj[part] = newV;
-    obj = newV;
-  }
-
-  const currentValue = obj[lastPart];
-  if (!Array.isArray(currentValue)) {
-    throw new Error(
-      `dispatchFilter can only be used on arrays and ${path} is not`);
-  }
-
-  const filterFn = value;
-  obj[lastPart] = currentValue.filter(filterFn);
-
-  return newState;
-}
-
-// exported to support tests
-export function pushPath(state, payload) {
-  const {path, value} = payload;
-  const parts = path.split(PATH_DELIMITER);
-  const lastPart = parts.pop();
-  const newState = {...state};
-
-  let obj = newState;
-  for (const part of parts) {
-    const v = obj[part];
-    const newV = {...v};
-    obj[part] = newV;
-    obj = newV;
-  }
-
-  const currentValue = obj[lastPart];
-  if (!Array.isArray(currentValue)) {
-    throw new Error(
-      `dispatchPush can only be used on arrays and ${path} is not`);
-  }
-
-  obj[lastPart] = [...currentValue, ...value];
-
-  return newState;
 }
 
 // exported to support tests
