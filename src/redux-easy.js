@@ -12,14 +12,18 @@ let dispatchFn,
   silent,
   store;
 
-const SET = '@@set';
+const FILTER = '@@filter';
 const PATH_DELIMITER = '.';
+const PUSH = '@@push';
+const SET = '@@set';
 const STATE_KEY = 'reduxState';
 
 const reducers = {
   '@@INIT': () => null,
   '@@redux/INIT': () => null,
   '@@async': (state, payload) => payload,
+  [FILTER]: filterPath,
+  [PUSH]: pushPath,
   [SET]: setPath
 };
 
@@ -45,16 +49,55 @@ export function deepFreeze(obj, freezing = []) {
 
 export function dispatch(type, payload) {
   // dispatchFn is not set in some tests.
-  if (dispatchFn) dispatchFn({type, payload});
+  if (!dispatchFn) return;
+
+  dispatchFn({type, payload});
 }
 
-export function dispatchSet(path, value) {
-  if (dispatchFn) {
-    dispatchFn({
-      type: SET + ' ' + path,
-      payload: {path, value}
-    });
+/**
+ * This removes elements from the array at path.
+ * filterFn must be a function that takes an array element
+ * and returns a boolean indicating
+ * whether the element should be retained.
+ */
+export function dispatchFilter(path, filterFn) {
+  if (typeof filterFn !== 'function') {
+    throw new Error('dispatchFilter must be passed a function');
   }
+
+  // dispatchFn is not set in some tests.
+  if (!dispatchFn) return;
+
+  dispatchFn({
+    type: FILTER + ' ' + path,
+    payload: {path, value: filterFn}
+  });
+}
+
+/**
+ * This adds elements to the end of the array at path.
+ */
+export function dispatchPush(path, ...elements) {
+  // dispatchFn is not set in some tests.
+  if (!dispatchFn) return;
+
+  dispatchFn({
+    type: PUSH + ' ' + path,
+    payload: {path, value: elements}
+  });
+}
+
+/**
+ * This sets the value found at path to a given value.
+ */
+export function dispatchSet(path, value) {
+  // dispatchFn is not set in some tests.
+  if (!dispatchFn) return;
+
+  dispatchFn({
+    type: SET + ' ' + path,
+    payload: {path, value}
+  });
 }
 
 export function getPathValue(path, state) {
@@ -110,7 +153,12 @@ export function reducer(state = initialState, action) {
     throw new Error('action object passed to reducer must have type property');
   }
 
-  if (type.startsWith(SET)) type = SET;
+  if (type.startsWith(SET) ||
+      type.startsWith(PUSH) ||
+      type.startsWith(FILTER)) {
+    const index = type.indexOf(' ');
+    type = type.substring(0, index);
+  }
 
   const fn = reducers[type];
   if (!fn) {
@@ -188,6 +236,59 @@ export function saveState(state) {
     if (!silent) console.error('redux-util saveState:', e.message);
     throw e;
   }
+}
+
+// exported to support tests
+export function filterPath(state, payload) {
+  const {path, value} = payload;
+  const parts = path.split(PATH_DELIMITER);
+  const lastPart = parts.pop();
+  const newState = {...state};
+
+  let obj = newState;
+  for (const part of parts) {
+    const v = obj[part];
+    const newV = {...v};
+    obj[part] = newV;
+    obj = newV;
+  }
+
+  const currentValue = obj[lastPart];
+  if (!Array.isArray(currentValue)) {
+    throw new Error(
+      `dispatchFilter can only be used on arrays and ${path} is not`);
+  }
+
+  const filterFn = value;
+  obj[lastPart] = currentValue.filter(filterFn);
+
+  return newState;
+}
+
+// exported to support tests
+export function pushPath(state, payload) {
+  const {path, value} = payload;
+  const parts = path.split(PATH_DELIMITER);
+  const lastPart = parts.pop();
+  const newState = {...state};
+
+  let obj = newState;
+  for (const part of parts) {
+    const v = obj[part];
+    const newV = {...v};
+    obj[part] = newV;
+    obj = newV;
+  }
+
+  const currentValue = obj[lastPart];
+  if (!Array.isArray(currentValue)) {
+    throw new Error(
+      `dispatchPush can only be used on arrays and ${path} is not`);
+  }
+
+  obj[lastPart] = [...currentValue, ...value];
+
+  return newState;
 }
 
 // exported to support tests

@@ -91,7 +91,7 @@ describe('redux-easy', () => {
     const actions = store.getActions();
     expect(actions.length).toBe(1);
     const [action] = actions;
-    expect(action.type).toBe('@@set');
+    expect(action.type).toEqual(expect.stringMatching(/^@@set /));
     expect(action.payload).toEqual({path, value});
   });
 
