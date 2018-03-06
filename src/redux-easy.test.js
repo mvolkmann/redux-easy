@@ -2,6 +2,8 @@ const {
   addReducer,
   deepFreeze,
   dispatch,
+  dispatchFilter,
+  dispatchPush,
   dispatchSet,
   getPathValue,
   getState,
@@ -16,10 +18,12 @@ const {
 const STATE_KEY = 'reduxState';
 
 describe('redux-easy', () => {
+
   const initialState = {
     foo: 1,
     bar: {
-      baz: 2
+      baz: 2,
+      qux: ['one', 'two', 'three']
     }
   };
   let store;
@@ -80,6 +84,27 @@ describe('redux-easy', () => {
     const [action] = actions;
     expect(action.type).toBe(type);
     expect(action.payload).toEqual(payload);
+  });
+
+  test('dispatchFilter with real store', () => {
+    const path = 'bar.qux';
+
+    // Remove all elements that contain the letter "t".
+    const filterFn = element => !/t/.test(element);
+    dispatchFilter(path, filterFn);
+
+    const actual = getPathValue(path);
+    expect(actual).toEqual(['one']);
+  });
+
+  test('dispatchPush with real store', () => {
+    const path = 'bar.qux';
+
+    // Remove all elements that contain the letter "t".
+    dispatchPush(path, 'four', 'five');
+
+    const actual = getPathValue(path);
+    expect(actual).toEqual(['one', 'two', 'three', 'four', 'five']);
   });
 
   test('dispatchSet with mock store', () => {
