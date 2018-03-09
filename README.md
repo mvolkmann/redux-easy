@@ -21,6 +21,9 @@ This is a set of utility functions that make it easier to use Redux.
 * Actions that only remove elements from an array
   can be dispatched without writing reducer functions
   (see `dispatchFilter`).
+* Actions that only modify elements in an array
+  can be dispatched without writing reducer functions
+  (see `dispatchMap`).
 * All objects in the Redux state are automatically frozen
   to prevent accidental state modification.
 * Asynchronous actions are handled in a simple way
