@@ -3,6 +3,7 @@ const {
   deepFreeze,
   dispatch,
   dispatchFilter,
+  dispatchMap,
   dispatchPush,
   dispatchSet,
   getPathValue,
@@ -95,6 +96,27 @@ describe('redux-easy', () => {
 
     const actual = getPathValue(path);
     expect(actual).toEqual(['one']);
+  });
+
+  test('dispatchMap with real store', () => {
+    const path = 'bar.qux';
+
+    // Uppercase all elements.
+    const mapFn = element => element.toUpperCase();
+    dispatchMap(path, mapFn);
+
+    const actual = getPathValue(path);
+    expect(actual).toEqual(['ONE', 'TWO', 'THREE']);
+  });
+
+  test('dispatchPush with real store', () => {
+    const path = 'bar.qux';
+
+    // Remove all elements that contain the letter "t".
+    dispatchPush(path, 'four', 'five');
+
+    const actual = getPathValue(path);
+    expect(actual).toEqual(['one', 'two', 'three', 'four', 'five']);
   });
 
   test('dispatchPush with real store', () => {
