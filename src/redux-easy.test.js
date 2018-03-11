@@ -2,6 +2,7 @@ const {
   addReducer,
   deepFreeze,
   dispatch,
+  dispatchDelete,
   dispatchFilter,
   dispatchMap,
   dispatchPush,
@@ -85,6 +86,15 @@ describe('redux-easy', () => {
     const [action] = actions;
     expect(action.type).toBe(type);
     expect(action.payload).toEqual(payload);
+  });
+
+  test('dispatchDelete with real store', () => {
+    const path = 'bar.baz';
+
+    dispatchDelete(path);
+
+    const actual = getPathValue(path);
+    expect(actual).toBeUndefined();
   });
 
   test('dispatchFilter with real store', () => {

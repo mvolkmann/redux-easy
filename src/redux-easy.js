@@ -12,6 +12,7 @@ let dispatchFn,
   silent,
   store;
 
+const DELETE = '@@delete';
 const FILTER = '@@filter';
 const MAP = '@@map';
 const PATH_DELIMITER = '.';
@@ -23,6 +24,7 @@ const reducers = {
   '@@INIT': () => null,
   '@@redux/INIT': () => null,
   '@@async': (state, payload) => payload,
+  [DELETE]: deletePath,
   [FILTER]: filterPath,
   [MAP]: mapPath,
   [PUSH]: pushPath,
@@ -47,11 +49,38 @@ export function deepFreeze(obj, freezing = []) {
   Object.freeze(obj);
 }
 
+// exported to support tests
+export function deletePath(state, payload) {
+  const {path} = payload;
+  const parts = path.split(PATH_DELIMITER);
+  const lastPart = parts.pop();
+  const newState = {...state};
+
+  let obj = newState;
+  for (const part of parts) {
+    const v = obj[part];
+    const newV = {...v};
+    obj[part] = newV;
+    obj = newV;
+  }
+
+  delete obj[lastPart];
+
+  return newState;
+}
+
 export function dispatch(type, payload) {
   // dispatchFn is not set in some tests.
   if (!dispatchFn) return;
 
   dispatchFn({type, payload});
+}
+
+/**
+ * This deletes the property at path.
+ */
+export function dispatchDelete(path) {
+  dispatch(DELETE + ' ' + path, {path});
 }
 
 /**
@@ -224,6 +253,7 @@ export function reducer(state = initialState, action) {
   }
 
   if (type.startsWith(SET) ||
+      type.startsWith(DELETE) ||
       type.startsWith(PUSH) ||
       type.startsWith(FILTER) ||
       type.startsWith(MAP)) {
