@@ -7,6 +7,7 @@ const {
   dispatchMap,
   dispatchPush,
   dispatchSet,
+  dispatchTransform,
   getPathValue,
   getState,
   handleAsyncAction,
@@ -158,6 +159,14 @@ describe('redux-easy', () => {
     dispatchSet(path, value);
     const actual = getPathValue(path);
     expect(actual).toEqual(value);
+  });
+
+  test('dispatchTransform with real store', () => {
+    const path = 'bar.baz';
+    const initialValue = getPathValue(path);
+    dispatchTransform(path, v => v + 1);
+    const newValue = getPathValue(path);
+    expect(newValue).toEqual(initialValue + 1);
   });
 
   test('getMockStore', () => {

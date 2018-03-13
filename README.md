@@ -15,6 +15,9 @@ This is a set of utility functions that make it easier to use Redux.
 * Simple actions that merely set a property value in the state
   (the most common kind) can be dispatched without writing
   reducer functions (see `dispatchSet`).
+* Actions that modify a property based on its current value
+  can be dispatched without writing reducer functions
+  (see `dispatchTransform`).
 * Actions that only delete a property
   can be dispatched without writing reducer functions
   (see `dispatchDelete`).

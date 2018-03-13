@@ -19,6 +19,7 @@ const PATH_DELIMITER = '.';
 const PUSH = '@@push';
 const SET = '@@set';
 const STATE_KEY = 'reduxState';
+const TRANSFORM = '@@transform';
 
 const reducers = {
   '@@INIT': () => null,
@@ -28,7 +29,8 @@ const reducers = {
   [FILTER]: filterPath,
   [MAP]: mapPath,
   [PUSH]: pushPath,
-  [SET]: setPath
+  [SET]: setPath,
+  [TRANSFORM]: transformPath
 };
 
 export const addReducer = (type, fn) => reducers[type] = fn;
@@ -121,6 +123,13 @@ export const dispatchPush = (path, ...elements) =>
  */
 export const dispatchSet = (path, value) =>
   dispatch(SET + ' ' + path, {path, value});
+
+export const dispatchTransform = (path, value) => {
+  if (typeof value !== 'function') {
+    throw new Error('dispatchTransform must be passed a function');
+  }
+  dispatch(TRANSFORM + ' ' + path, {path, value});
+};
 
 // exported to support tests
 export function filterPath(state, payload) {
@@ -253,6 +262,7 @@ export function reducer(state = initialState, action) {
   }
 
   if (type.startsWith(SET) ||
+      type.startsWith(TRANSFORM) ||
       type.startsWith(DELETE) ||
       type.startsWith(PUSH) ||
       type.startsWith(FILTER) ||
@@ -362,6 +372,27 @@ export function setPath(state, payload) {
 export function setStore(s) {
   store = s;
   dispatchFn = store.dispatch;
+}
+
+export function transformPath(state, payload) {
+  const {path, value} = payload;
+  const parts = path.split(PATH_DELIMITER);
+  const lastPart = parts.pop();
+  const newState = {...state};
+
+  let obj = newState;
+  for (const part of parts) {
+    const v = obj[part];
+    const newV = {...v};
+    obj[part] = newV;
+    obj = newV;
+  }
+
+  const fn = value;
+  const currentValue = obj[lastPart];
+  obj[lastPart] = fn(currentValue);
+
+  return newState;
 }
 
 export function watch(component, watchMap) {
