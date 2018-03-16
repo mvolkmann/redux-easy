@@ -53,7 +53,7 @@ export function deepFreeze(obj, freezing = []) {
 
 // exported to support tests
 export function deletePath(state, payload) {
-  const {path} = payload;
+  const path = payload;
   const parts = path.split(PATH_DELIMITER);
   const lastPart = parts.pop();
   const newState = {...state};
@@ -82,7 +82,7 @@ export function dispatch(type, payload) {
  * This deletes the property at path.
  */
 export function dispatchDelete(path) {
-  dispatch(DELETE + ' ' + path, {path});
+  dispatch(DELETE + ' ' + path, path);
 }
 
 /**
