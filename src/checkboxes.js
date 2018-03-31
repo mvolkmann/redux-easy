@@ -6,22 +6,22 @@ const getName = index => 'cb' + index;
 
 /**
  * This component renders a set of checkboxes.
- * The `pathList` prop specifies the text and Redux state path
+ * The `list` prop specifies the text and Redux state path
  * for each checkbox.
  * Specify a `className` prop to enable styling the checkboxes.
  */
 class Checkboxes extends Component {
 
   handleChange = (text, event) => {
-    const {pathList} = this.props;
-    const {path} = pathList.find(obj => obj.text === text);
+    const {list} = this.props;
+    const {path} = list.find(obj => obj.text === text);
     dispatchSet(path, event.target.checked);
   };
 
   render() {
-    const {className, pathList, values} = this.props;
+    const {className, list, values} = this.props;
 
-    const checkboxes = pathList.map((obj, index) => {
+    const checkboxes = list.map((obj, index) => {
       const {text, path} = obj;
       const checked = values ? values[index] : getPathValue(path);
       const name = getName(index);
@@ -48,7 +48,7 @@ class Checkboxes extends Component {
 
 Checkboxes.propTypes = {
   className: string,
-  pathList: arrayOf(
+  list: arrayOf(
     shape({
       text: string.isRequired,
       path: string.isRequired

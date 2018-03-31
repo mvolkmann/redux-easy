@@ -203,7 +203,7 @@ will be set the value of that radio button.
 For a set of checkboxes, use the `Checkboxes` component.
 For example,
 ```js
-<Checkboxes className="colors" pathList={checkboxList} />
+<Checkboxes className="colors" list={checkboxList} />
 ```
 where checkboxList is set as follows:
 ```js
