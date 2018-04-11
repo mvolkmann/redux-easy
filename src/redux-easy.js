@@ -33,7 +33,7 @@ const reducers = {
   [TRANSFORM]: transformPath
 };
 
-export const addReducer = (type, fn) => reducers[type] = fn;
+export const addReducer = (type, fn) => (reducers[type] = fn);
 
 export function deepFreeze(obj, freezing = []) {
   if (Object.isFrozen(obj) || freezing.includes(obj)) return;
@@ -149,7 +149,8 @@ export function filterPath(state, payload) {
   const currentValue = obj[lastPart];
   if (!Array.isArray(currentValue)) {
     throw new Error(
-      `dispatchFilter can only be used on arrays and ${path} is not`);
+      `dispatchFilter can only be used on arrays and ${path} is not`
+    );
   }
 
   const filterFn = value;
@@ -171,6 +172,9 @@ export function getPathValue(path, state) {
 }
 
 export const getState = () => store.getState();
+
+// This is useful in tests.
+export const getStore = () => store;
 
 // exported to support tests
 export const handleAsyncAction = promise =>
@@ -219,7 +223,8 @@ export function mapPath(state, payload) {
   const currentValue = obj[lastPart];
   if (!Array.isArray(currentValue)) {
     throw new Error(
-      `dispatchMap can only be used on arrays and ${path} is not`);
+      `dispatchMap can only be used on arrays and ${path} is not`
+    );
   }
 
   const mapFn = value;
@@ -246,7 +251,8 @@ export function pushPath(state, payload) {
   const currentValue = obj[lastPart];
   if (!Array.isArray(currentValue)) {
     throw new Error(
-      `dispatchPush can only be used on arrays and ${path} is not`);
+      `dispatchPush can only be used on arrays and ${path} is not`
+    );
   }
 
   obj[lastPart] = [...currentValue, ...value];
@@ -261,12 +267,14 @@ export function reducer(state = initialState, action) {
     throw new Error('action object passed to reducer must have type property');
   }
 
-  if (type.startsWith(SET) ||
-      type.startsWith(TRANSFORM) ||
-      type.startsWith(DELETE) ||
-      type.startsWith(PUSH) ||
-      type.startsWith(FILTER) ||
-      type.startsWith(MAP)) {
+  if (
+    type.startsWith(SET) ||
+    type.startsWith(TRANSFORM) ||
+    type.startsWith(DELETE) ||
+    type.startsWith(PUSH) ||
+    type.startsWith(FILTER) ||
+    type.startsWith(MAP)
+  ) {
     const index = type.indexOf(' ');
     type = type.substring(0, index);
   }
@@ -296,6 +304,7 @@ export function reducer(state = initialState, action) {
  * mock: optional boolean to use mock Redux store
  * silent: optional boolean
  *   (true to silence expected error messages in tests)
+ * Returns the render function.
  */
 export function reduxSetup(options) {
   const {component, mock} = options;
@@ -319,15 +328,16 @@ export function reduxSetup(options) {
     if (options.render) store.subscribe(options.render);
   }
 
+  let render;
+
   if (component && target) {
-    function render() {
+    render = () =>
       ReactDOM.render(<Provider store={store}>{component}</Provider>, target);
-    }
 
     render(); // initial render
   }
 
-  return store; // used in tests
+  return render;
 }
 
 /**

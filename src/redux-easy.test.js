@@ -10,6 +10,7 @@ const {
   dispatchTransform,
   getPathValue,
   getState,
+  getStore,
   handleAsyncAction,
   loadState,
   reducer,
@@ -47,7 +48,8 @@ describe('redux-easy', () => {
 
   beforeEach(() => {
     getStorage();
-    store = reduxSetup({initialState, silent: true});
+    reduxSetup({initialState, silent: true});
+    store = getStore();
   });
 
   test('@@INIT', () => {
@@ -78,7 +80,8 @@ describe('redux-easy', () => {
 
   test('dispatch', () => {
     // Using mock store so we can retrieve actions.
-    store = reduxSetup({initialState, mock: true, silent: true});
+    reduxSetup({initialState, mock: true, silent: true});
+    store = getStore();
     const type = '@@set';
     const payload = {path: 'some.path', value: 'some value'};
     dispatch(type, payload);
@@ -142,7 +145,8 @@ describe('redux-easy', () => {
 
   test('dispatchSet with mock store', () => {
     // Using mock store so we can retrieve actions.
-    store = reduxSetup({initialState, mock: true, silent: true});
+    reduxSetup({initialState, mock: true, silent: true});
+    store = getStore();
     const path = 'some.deep.path';
     const value = 'some value';
     dispatchSet(path, value);
@@ -170,7 +174,8 @@ describe('redux-easy', () => {
   });
 
   test('getMockStore', () => {
-    store = reduxSetup({initialState, mock: true, silent: true});
+    reduxSetup({initialState, mock: true, silent: true});
+    store = getStore();
 
     const type = 'setEmail';
     const payload = 'foo@bar.baz';
@@ -226,7 +231,8 @@ describe('redux-easy', () => {
 
   test('handleAsyncAction', done => {
     // Using mock store so we can retrieve actions.
-    store = reduxSetup({initialState, mock: true, silent: true});
+    reduxSetup({initialState, mock: true, silent: true});
+    store = getStore();
     const newState = {foo: 1, bar: true};
     const promise = Promise.resolve(newState);
     handleAsyncAction(promise);
