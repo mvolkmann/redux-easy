@@ -406,13 +406,13 @@ export function watch(component, watchMap) {
       }, {});
     }
 
-    const {path, pathList} = ownProps;
+    const {list, path} = ownProps;
 
     if (path) return {value: getPathValue(path, state)};
 
-    if (pathList) {
+    if (list) {
       return {
-        values: pathList.map(obj => getPathValue(obj.path, state))
+        values: list.map(obj => getPathValue(obj.path, state))
       };
     }
 
