@@ -1,6 +1,6 @@
 {
   "name": "redux-easy",
-  "version": "2.4.3",
+  "version": "2.4.4",
   "description": "provides functions that make using Redux easier",
   "main": "lib/index.js",
   "scripts": {
@@ -31,13 +31,17 @@
   },
   "homepage": "https://github.com/mvolkmann/redux-easy#readme",
   "dependencies": {
-    "lodash": "^4.17.4",
+    "lodash.throttle": "^4.1.1",
     "prop-types": "^15.6.0",
     "react": "^16.3.1",
     "react-dom": "^16.3.1",
     "react-redux": "^5.0.7",
     "redux": "^3.7.2",
     "redux-mock-store": "^1.5.1"
+  },
+  "peerDependencies": {
+    "react": "^16.3.1",
+    "react-dom": "^16.3.1"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
