@@ -1,15 +1,15 @@
 {
   "name": "redux-easy",
-  "version": "2.4.4",
+  "version": "2.5.0",
   "description": "provides functions that make using Redux easier",
   "main": "lib/index.js",
   "scripts": {
+    "build": "babel src -d lib",
     "clean": "rm -rf coverage lib",
     "cover": "jest src --coverage",
     "cover-open": "open coverage/lcov-report/index.html",
     "format": "prettier-eslint --write src/**/*.js",
     "lint": "eslint --quiet src --ext .js",
-    "prepare": "babel src -d lib",
     "test": "jest src"
   },
   "repository": {
@@ -50,6 +50,7 @@
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.6.1",
     "babel-preset-react": "^6.24.1",
+    "eslint-plugin-react": "^7.7.0",
     "jest": "^22.4.3",
     "prettier": "^1.11.1",
     "prettier-eslint-cli": "^4.7.1"

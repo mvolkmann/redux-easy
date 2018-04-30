@@ -41,7 +41,7 @@ class RadioButtons extends Component {
     });
 
     return (
-      <div className={'radioButtons ' + className}>
+      <div className={'radio-buttons ' + className}>
         {radioButtons}
       </div>
     );

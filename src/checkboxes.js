@@ -1,4 +1,4 @@
-import {arrayOf, shape, string} from 'prop-types';
+import {arrayOf, bool, shape, string} from 'prop-types';
 import React, {Component} from 'react';
 import {dispatchSet, getPathValue, watch} from './redux-easy';
 
@@ -53,7 +53,8 @@ Checkboxes.propTypes = {
       text: string.isRequired,
       path: string.isRequired
     })
-  ).isRequired
+  ).isRequired,
+  values: arrayOf(bool).isRequired
 };
 
 export default watch(Checkboxes);

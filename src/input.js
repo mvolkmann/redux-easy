@@ -23,7 +23,8 @@ class Input extends Component {
   };
 
   render() {
-    const {onEnter, path, type = 'text'} = this.props;
+    if (!this.props.type) this.props.type = 'text';
+    const {onEnter, path, type} = this.props;
 
     let {value} = this.props;
     if (!value) value = getPathValue(path);

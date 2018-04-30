@@ -331,8 +331,9 @@ export function reduxSetup(options) {
   let render;
 
   if (component && target) {
-    render = () =>
+    render = () => {
       ReactDOM.render(<Provider store={store}>{component}</Provider>, target);
+    };
 
     render(); // initial render
   }
