@@ -23,7 +23,6 @@ class Input extends Component {
   };
 
   render() {
-    if (!this.props.type) this.props.type = 'text';
     const {onEnter, path, type} = this.props;
 
     let {value} = this.props;
@@ -33,7 +32,7 @@ class Input extends Component {
     if (value === undefined) value = isCheckbox ? false : '';
 
     const propName = isCheckbox ? 'checked' : 'value';
-    const inputProps = {...this.props, [propName]: value};
+    const inputProps = {type: 'text', ...this.props, [propName]: value};
     delete inputProps.dispatch;
 
     if (onEnter) {

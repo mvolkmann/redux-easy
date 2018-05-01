@@ -10,7 +10,7 @@ const getName = index => 'rb' + index;
  * for each radio button.
  * The `path` prop specifies the Redux state path
  * where the value will be stored.
- * Specify a `className` prop to enable styling the radioButtons.
+ * Specify a `className` prop to enable styling the radio-buttons.
  */
 class RadioButtons extends Component {
 
