@@ -1,6 +1,6 @@
 {
   "name": "redux-easy",
-  "version": "2.6.1",
+  "version": "2.6.2",
   "description": "provides functions that make using Redux easier",
   "main": "lib/index.js",
   "scripts": {
@@ -10,6 +10,7 @@
     "cover-open": "open coverage/lcov-report/index.html",
     "format": "prettier-eslint --write src/**/*.js",
     "lint": "eslint --quiet src --ext .js",
+    "prepublish": "babel src -d lib",
     "test": "jest src"
   },
   "repository": {
