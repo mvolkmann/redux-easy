@@ -22,7 +22,6 @@ const {
 const STATE_KEY = 'reduxState';
 
 describe('redux-easy', () => {
-
   const initialState = {
     foo: 1,
     bar: {

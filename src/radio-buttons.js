@@ -1,6 +1,6 @@
 import {arrayOf, shape, string} from 'prop-types';
 import React, {Component} from 'react';
-import {dispatchSet, getPathValue, watch} from './redux-easy';
+import {dispatch, dispatchSet, getPathValue, watch} from './redux-easy';
 
 const getName = index => 'rb' + index;
 
@@ -13,9 +13,12 @@ const getName = index => 'rb' + index;
  * Specify a `className` prop to enable styling the radio-buttons.
  */
 class RadioButtons extends Component {
-
-  handleChange = event =>
-    dispatchSet(this.props.path, event.target.value);
+  handleChange = event => {
+    const {action, path} = this.props;
+    const {value} = event.target;
+    if (path) dispatchSet(path, value);
+    if (action) dispatch(action, {path, value});
+  };
 
   render() {
     const {className, list, path} = this.props;
@@ -40,15 +43,12 @@ class RadioButtons extends Component {
       );
     });
 
-    return (
-      <div className={'radio-buttons ' + className}>
-        {radioButtons}
-      </div>
-    );
+    return <div className={'radio-buttons ' + className}>{radioButtons}</div>;
   }
 }
 
 RadioButtons.propTypes = {
+  action: string,
   className: string,
   list: arrayOf(
     shape({
@@ -56,7 +56,7 @@ RadioButtons.propTypes = {
       value: string
     })
   ).isRequired,
-  path: string.isRequired,
+  path: string,
   value: string
 };
 

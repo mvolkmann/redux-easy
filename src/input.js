@@ -1,14 +1,13 @@
 import {bool, func, number, oneOfType, string} from 'prop-types';
 import React, {Component} from 'react';
-import {dispatchSet, getPathValue, watch} from './redux-easy';
+import {dispatch, dispatchSet, getPathValue, watch} from './redux-easy';
 
 class Input extends Component {
-
   ref = null;
 
   handleChange = event => {
     const {checked, value} = event.target;
-    const {onChange, path, type} = this.props;
+    const {action, onChange, path, type} = this.props;
 
     let v = value;
     if (type === 'checkbox') {
@@ -17,7 +16,8 @@ class Input extends Component {
       if (value.length) v = Number(value);
     }
 
-    dispatchSet(path, v);
+    if (path) dispatchSet(path, v);
+    if (action) dispatch(action, {path, value: v});
 
     if (onChange) onChange(event);
   };
@@ -46,16 +46,17 @@ class Input extends Component {
       <input
         {...inputProps}
         onChange={this.handleChange}
-        ref={input => this.ref = input}
+        ref={input => (this.ref = input)}
       />
     );
   }
 }
 
 Input.propTypes = {
+  action: string, // action to be dispatched on change
   onChange: func, // called on every change to value
   onEnter: func, // called if user presses enter key
-  path: string.isRequired, // state path that is updated
+  path: string, // state path that is updated
   type: string, // type of the HTML input
   // optional current value (obtained from state at path if not specified)
   value: oneOfType([string, number, bool])

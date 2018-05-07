@@ -1,15 +1,15 @@
 import {func, string} from 'prop-types';
 import React, {Component} from 'react';
-import {dispatchSet, getPathValue, watch} from './redux-easy';
+import {dispatch, dispatchSet, getPathValue, watch} from './redux-easy';
 
 class TextArea extends Component {
-
   ref = null;
 
   handleChange = event => {
+    const {action, onChange, path} = this.props;
     const {value} = event.target;
-    const {onChange, path} = this.props;
-    dispatchSet(path, value);
+    if (path) dispatchSet(path, value);
+    if (action) dispatch(action, {path, value});
     if (onChange) onChange(event);
   };
 
@@ -26,15 +26,16 @@ class TextArea extends Component {
       <textarea
         {...textAreaProps}
         onChange={this.handleChange}
-        ref={textArea => this.ref = textArea}
+        ref={textArea => (this.ref = textArea)}
       />
     );
   }
 }
 
 TextArea.propTypes = {
+  action: string,
   onChange: func,
-  path: string.isRequired,
+  path: string,
   value: string
 };
 

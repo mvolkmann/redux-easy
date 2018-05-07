@@ -1,16 +1,15 @@
 import {func, node, number, oneOfType, string} from 'prop-types';
 import React, {Component} from 'react';
-import {dispatchSet, getPathValue, watch} from './redux-easy';
+import {dispatch, dispatchSet, getPathValue, watch} from './redux-easy';
 
 class Select extends Component {
-
   ref = null;
 
   handleChange = event => {
+    const {action, onChange, path} = this.props;
     const {value} = event.target;
-    const {onChange, path: thePath} = this.props;
-    this.path = thePath;
-    dispatchSet(thePath, value);
+    if (path) dispatchSet(path, value);
+    if (action) dispatch(action, {path, value});
     if (onChange) onChange(event);
   };
 
@@ -28,7 +27,7 @@ class Select extends Component {
       <select
         {...selectProps}
         onChange={this.handleChange}
-        ref={select => this.ref = select}
+        ref={select => (this.ref = select)}
       >
         {children}
       </select>
@@ -37,9 +36,10 @@ class Select extends Component {
 }
 
 Select.propTypes = {
+  action: string,
   children: node,
   onChange: func,
-  path: string.isRequired,
+  path: string,
   value: oneOfType([number, string])
 };
 

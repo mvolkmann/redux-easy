@@ -1,6 +1,6 @@
 import {arrayOf, bool, shape, string} from 'prop-types';
 import React, {Component} from 'react';
-import {dispatchSet, getPathValue, watch} from './redux-easy';
+import {dispatch, dispatchSet, getPathValue, watch} from './redux-easy';
 
 const getName = index => 'cb' + index;
 
@@ -11,11 +11,12 @@ const getName = index => 'cb' + index;
  * Specify a `className` prop to enable styling the checkboxes.
  */
 class Checkboxes extends Component {
-
   handleChange = (text, event) => {
-    const {list} = this.props;
+    const {action, list} = this.props;
     const {path} = list.find(obj => obj.text === text);
-    dispatchSet(path, event.target.checked);
+    const value = event.target.checked;
+    if (path) dispatchSet(path, value);
+    if (action) dispatch(action, {path, value});
   };
 
   render() {
@@ -38,20 +39,17 @@ class Checkboxes extends Component {
       );
     });
 
-    return (
-      <div className={'checkboxes ' + className}>
-        {checkboxes}
-      </div>
-    );
+    return <div className={'checkboxes ' + className}>{checkboxes}</div>;
   }
 }
 
 Checkboxes.propTypes = {
+  action: string,
   className: string,
   list: arrayOf(
     shape({
       text: string.isRequired,
-      path: string.isRequired
+      path: string
     })
   ).isRequired,
   values: arrayOf(bool).isRequired
