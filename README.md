@@ -43,9 +43,9 @@ This is a set of utility functions that make it easier to use Redux.
 
 ## Example app
 
-See https://github.com/mvolkmann/redux-easy-greeting-card.
+See <https://github.com/mvolkmann/redux-easy-greeting-card>.
 For comparison, the same app using standard Redux is at
-https://github.com/mvolkmann/redux-greeting-card.
+<https://github.com/mvolkmann/redux-greeting-card>.
 
 ## Setup
 
@@ -305,4 +305,4 @@ That's everything to you need to know to use redux-easy.
 Code simply!
 
 If you like this, also check out
-https://www.npmjs.com/package/react-hash-route.
+<https://www.npmjs.com/package/react-hash-route>.
