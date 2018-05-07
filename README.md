@@ -100,7 +100,6 @@ import React, {Component} from 'react';
 import {dispatch, watch} from 'redux-easy';
 
 class MyComponent extends Component {
-
   onFirstNameChange = event => {
     // assumes value comes from an input
     const {value} = event.target;
@@ -110,7 +109,7 @@ class MyComponent extends Component {
     // perhaps user.firstName, the following can be used instead.
     // There is no need to implement simple reducer functions.
     dispatchSet('user.firstName', value);
-  }
+  };
 
   render() {
     const {user} = this.props;
@@ -148,6 +147,7 @@ as follows:
 
 HTML `input` elements can be replaced by the `Input` component.
 For example,
+
 ```js
 <Input path="user.firstName" />
 ```
@@ -164,12 +164,14 @@ supply an `onChange` prop that refers to a function.
 
 HTML `textarea` elements can be replaced by the `TextArea` component.
 For example,
+
 ```js
 <TextArea path="feedback.comment" />
 ```
 
 HTML `select` elements can be replaced by the `Select` component.
 For example,
+
 ```js
 <Select path="user.favoriteColor">
   <option>red</option>
@@ -177,19 +179,19 @@ For example,
   <option>blue</option>
 </Select>
 ```
+
 If the `option` elements have a value attribute, that value
 will be used instead of the text inside the `option`.
 
 For a set of radio buttons, use the `RadioButtons` component.
 For example,
+
 ```js
-<RadioButtons
-  className="flavor"
-  list={radioButtonList}
-  path="favoriteFlavor"
-/>
+<RadioButtons className="flavor" list={radioButtonList} path="favoriteFlavor" />
 ```
+
 where radioButtonList is set as follows:
+
 ```js
 const radioButtonList = [
   {text: 'Chocolate', value: 'choc'},
@@ -197,15 +199,19 @@ const radioButtonList = [
   {text: 'Vanilla', value: 'van'}
 ];
 ```
+
 When a radio button is clicked the state property `favoriteFlavor`
 will be set the value of that radio button.
 
 For a set of checkboxes, use the `Checkboxes` component.
 For example,
+
 ```js
 <Checkboxes className="colors" list={checkboxList} />
 ```
+
 where checkboxList is set as follows:
+
 ```js
 const checkboxList = [
   {text: 'Red', path: 'color.red'},
@@ -213,8 +219,20 @@ const checkboxList = [
   {text: 'Blue', path: 'color.blue'}
 ];
 ```
+
 When a checkbox is clicked the boolean value at the corresponding path
 will be toggled between false and true.
+
+All of these components take an `action` prop in addition to a `path` prop.
+Both of these props are optional.
+Using the `path` prop causes a specified state path
+to be updated with the value of the component.
+Using the `action` prop causes an action with a given name to be dispatched.
+The action is typically defined using the `addReducer` function.
+The payload for this action is an object that has `path` and `value` properties.
+Using the `action` prop is useful when a change must cause multiple state paths to be updated.
+For example, the `Checkboxes` component could use this to cause
+a change to one checkbox to update the state of other checkboxes.
 
 ## Asynchronous Actions
 
@@ -224,6 +242,7 @@ it will wait for that `Promise` to resolve and then
 update the state to the resolved value of the `Promise`.
 
 Here's an example of such a reducer function:
+
 ```js
 addReducer('myAsyncThing', (state, payload) => {
   return new Promise(async (resolve, reject) => {
@@ -280,7 +299,6 @@ describe('MyComponent', () => {
     expect(action.payload).toBe(firstName);
   });
 });
-
 ```
 
 That's everything to you need to know to use redux-easy.
