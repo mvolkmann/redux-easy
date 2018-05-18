@@ -23,7 +23,7 @@ class Input extends Component {
   };
 
   render() {
-    const {onEnter, path, type} = this.props;
+    const {autoFocus, onEnter, path, type} = this.props;
 
     let {value} = this.props;
     if (!value) value = getPathValue(path);
@@ -32,7 +32,12 @@ class Input extends Component {
     if (value === undefined) value = isCheckbox ? false : '';
 
     const propName = isCheckbox ? 'checked' : 'value';
-    const inputProps = {type: 'text', ...this.props, [propName]: value};
+    const inputProps = {
+      autoFocus,
+      type: 'text',
+      ...this.props,
+      [propName]: value
+    };
     delete inputProps.dispatch;
 
     if (onEnter) {
@@ -54,6 +59,7 @@ class Input extends Component {
 
 Input.propTypes = {
   action: string, // action to be dispatched on change
+  autoFocus: bool,
   onChange: func, // called on every change to value
   onEnter: func, // called if user presses enter key
   path: string, // state path that is updated

@@ -360,7 +360,6 @@ export function saveState(state) {
   }
 }
 
-// exported to support tests
 export function setPath(state, payload) {
   const {path, value} = payload;
   const parts = path.split(PATH_DELIMITER);
