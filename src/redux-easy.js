@@ -5,12 +5,12 @@ import ReactDOM from 'react-dom';
 // ESLint says Provide is never used, but it is!
 import {connect, Provider} from 'react-redux';
 import {createStore} from 'redux';
-import configureStore from 'redux-mock-store';
 
 let dispatchFn,
   initialState = {},
   silent,
-  store;
+  store,
+  usingMockStore;
 
 const DELETE = '@@delete';
 const FILTER = '@@filter';
@@ -303,13 +303,12 @@ export function reducer(state = initialState, action) {
  * target: element where component should be rendered
  *   (defaults to element with id "root")
  * initialState: required object
- * mock: optional boolean to use mock Redux store
  * silent: optional boolean
  *   (true to silence expected error messages in tests)
  * Returns the render function.
  */
 export function reduxSetup(options) {
-  const {component, mock} = options;
+  const {component} = options;
   ({initialState = {}, silent} = options);
   const target = options.target || document.getElementById('root');
 
@@ -317,12 +316,10 @@ export function reduxSetup(options) {
   const enhancer = extension && extension();
   const preloadedState = loadState();
 
-  store = mock
-    ? configureStore([])(initialState)
-    : createStore(reducer, preloadedState, enhancer);
+  if (!store) store = createStore(reducer, preloadedState, enhancer);
   setStore(store);
 
-  if (!mock) {
+  if (!usingMockStore) {
     // See the video from Dan Abramov at
     // https://egghead.io/lessons/
     // javascript-redux-persisting-the-state-to-the-local-storage.
@@ -381,9 +378,11 @@ export function setPath(state, payload) {
   return newState;
 }
 
-export function setStore(s) {
+// usingMock store is set to true only in some tests.
+export function setStore(s, usingMock = false) {
   store = s;
-  dispatchFn = store.dispatch;
+  usingMockStore = usingMock;
+  if (store) dispatchFn = store.dispatch;
 }
 
 export function transformPath(state, payload) {

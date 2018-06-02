@@ -1,4 +1,6 @@
-const {
+import cloneDeep from 'lodash.clonedeep';
+import configureStore from 'redux-mock-store';
+import {
   addReducer,
   deepFreeze,
   dispatch,
@@ -17,39 +19,45 @@ const {
   reducer,
   reduxSetup,
   saveState,
-  setPath
-} = require('./redux-easy');
+  setPath,
+  setStore
+} from './redux-easy';
 
 const STATE_KEY = 'reduxState';
 
-describe('redux-easy', () => {
-  const initialState = {
-    foo: 1,
-    bar: {
-      baz: 2,
-      qux: ['one', 'two', 'three']
+const INITIAL_STATE = {
+  foo: 1,
+  bar: {
+    baz: 2,
+    qux: ['one', 'two', 'three']
+  }
+};
+
+function getStorage() {
+  const storage = {
+    getItem(key) {
+      return storage[key];
+    },
+    setItem(key, value) {
+      storage[key] = value;
     }
   };
-  let store;
+  global.sessionStorage = storage;
+  return storage;
+}
+
+describe('redux-easy with mock store', () => {
+  let initialState;
 
   // Mocks sessionStorage.
-  function getStorage() {
-    const storage = {
-      getItem(key) {
-        return storage[key];
-      },
-      setItem(key, value) {
-        storage[key] = value;
-      }
-    };
-    global.sessionStorage = storage;
-    return storage;
-  }
-
   beforeEach(() => {
     getStorage();
+
+    initialState = cloneDeep(INITIAL_STATE);
+
+    // Create and register a mock store.
+    setStore(configureStore([])(initialState), true);
     reduxSetup({initialState, silent: true});
-    store = getStore();
   });
 
   test('INIT', () => {
@@ -79,17 +87,58 @@ describe('redux-easy', () => {
   });
 
   test('dispatch', () => {
-    // Using mock store so we can retrieve actions.
-    reduxSetup({initialState, mock: true, silent: true});
-    store = getStore();
     const type = '@@set';
     const payload = {path: 'some.path', value: 'some value'};
     dispatch(type, payload);
-    const actions = store.getActions();
+    const actions = getStore().getActions();
     expect(actions.length).toBe(1);
     const [action] = actions;
     expect(action.type).toBe(type);
     expect(action.payload).toEqual(payload);
+  });
+
+  test('dispatchSet with mock store', () => {
+    // Using mock store so we can retrieve actions.
+    //reduxSetup({initialState, mock: true, silent: true});
+    const path = 'some.deep.path';
+    const value = 'some value';
+    dispatchSet(path, value);
+    const actions = getStore().getActions();
+    expect(actions.length).toBe(1);
+    const [action] = actions;
+    expect(action.type).toEqual(expect.stringMatching(/^@@set /));
+    expect(action.payload).toEqual({path, value});
+  });
+
+  test('handleAsyncAction', done => {
+    const store = getStore();
+    const newState = {foo: 1, bar: true};
+    const promise = Promise.resolve(newState);
+    handleAsyncAction(promise);
+    promise.then(() => {
+      const actions = store.getActions();
+      expect(actions.length).toBe(1);
+      const [action] = actions;
+      expect(action.type).toBe('@@async');
+      expect(action.payload).toEqual(newState);
+      done();
+    });
+  });
+});
+
+describe('redux-easy with real store', () => {
+  let initialState, store;
+
+  beforeEach(() => {
+    getStorage();
+
+    initialState = cloneDeep(INITIAL_STATE);
+
+    // Use real store.
+    setStore(null);
+    reduxSetup({initialState, silent: true});
+
+    store = getStore();
   });
 
   test('dispatchDelete with real store', () => {
@@ -112,6 +161,7 @@ describe('redux-easy', () => {
     expect(actual).toEqual(['one']);
   });
 
+  //TODO: This passes when run by itself!
   test('dispatchMap with real store', () => {
     const path = 'bar.qux';
 
@@ -142,21 +192,6 @@ describe('redux-easy', () => {
     const actual = getPathValue(path);
     expect(actual).toEqual(['one', 'two', 'three', 'four', 'five']);
   });
-
-  test('dispatchSet with mock store', () => {
-    // Using mock store so we can retrieve actions.
-    reduxSetup({initialState, mock: true, silent: true});
-    store = getStore();
-    const path = 'some.deep.path';
-    const value = 'some value';
-    dispatchSet(path, value);
-    const actions = store.getActions();
-    expect(actions.length).toBe(1);
-    const [action] = actions;
-    expect(action.type).toEqual(expect.stringMatching(/^@@set /));
-    expect(action.payload).toEqual({path, value});
-  });
-
   test('dispatchSet with real store', () => {
     const path = 'some.deep.path';
     const value = 'some value';
@@ -173,23 +208,6 @@ describe('redux-easy', () => {
     expect(newValue).toEqual(initialValue + 1);
   });
 
-  test('getMockStore', () => {
-    reduxSetup({initialState, mock: true, silent: true});
-    store = getStore();
-
-    const type = 'setEmail';
-    const payload = 'foo@bar.baz';
-    dispatch(type, payload);
-
-    const actions = store.getActions();
-    expect(actions.length).toBe(1);
-
-    const [action] = actions;
-    expect(action.type).toBe(type);
-    expect(action.payload).toBe(payload);
-  });
-
-  /*
   // We are trusting that Redux works and are
   // just including this test for code coverage.
   test('getState', () => {
@@ -205,7 +223,6 @@ describe('redux-easy', () => {
 
     expect(store.getState().email).toBe(payload);
   });
-  */
 
   test('getPathValue', () => {
     let path = 'nothing.found.here';
@@ -227,23 +244,6 @@ describe('redux-easy', () => {
 
   test('getState', () => {
     expect(getState()).toEqual(store.getState());
-  });
-
-  test('handleAsyncAction', done => {
-    // Using mock store so we can retrieve actions.
-    reduxSetup({initialState, mock: true, silent: true});
-    store = getStore();
-    const newState = {foo: 1, bar: true};
-    const promise = Promise.resolve(newState);
-    handleAsyncAction(promise);
-    promise.then(() => {
-      const actions = store.getActions();
-      expect(actions.length).toBe(1);
-      const [action] = actions;
-      expect(action.type).toBe('@@async');
-      expect(action.payload).toEqual(newState);
-      done();
-    });
   });
 
   test('invalid action type', () => {

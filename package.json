@@ -1,6 +1,6 @@
 {
   "name": "redux-easy",
-  "version": "2.7.0",
+  "version": "2.7.1",
   "description": "provides functions that make using Redux easier",
   "main": "lib/index.js",
   "scripts": {
@@ -53,6 +53,7 @@
     "babel-preset-react": "^6.24.1",
     "eslint-plugin-react": "^7.8.2",
     "jest": "^22.4.4",
+    "lodash.clonedeep": "^4.5.0",
     "prettier": "^1.13.4",
     "prettier-eslint-cli": "^4.7.1",
     "redux-mock-store": "^1.5.1"
