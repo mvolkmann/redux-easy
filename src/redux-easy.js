@@ -419,8 +419,18 @@ export function watch(component, watchMap) {
 
     const {list, path} = ownProps;
 
+    // If no watchMap is passed to the watch function
+    // and the component takes a prop named "path",
+    // this will pass a prop named "value" to the component
+    // whose value is the value of the state at that path.
     if (path) return {value: getPathValue(path, state)};
 
+    // If no watchMap is passed to the watch function
+    // and the component takes a prop named "list"
+    // whose value is an array of objects that each
+    // have a "path" property whose value is a state path,
+    // this will pass a prop named "values" to the component
+    // whose value is an array of the values at those state paths.
     if (list) {
       return {
         values: list.map(obj => getPathValue(obj.path, state))
@@ -428,7 +438,7 @@ export function watch(component, watchMap) {
     }
 
     throw new Error(
-      'watched components must have a watchMap, path, or pathList prop'
+      'watched components must have a watchMap, path, or list prop'
     );
   }
 

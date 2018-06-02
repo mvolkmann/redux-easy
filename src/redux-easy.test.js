@@ -1,4 +1,5 @@
 import cloneDeep from 'lodash.clonedeep';
+import React from 'react';
 import configureStore from 'redux-mock-store';
 import {
   addReducer,
@@ -21,7 +22,8 @@ import {
   saveState,
   setPath,
   setStore,
-  STATE_KEY
+  STATE_KEY,
+  watch
 } from './redux-easy';
 
 const INITIAL_STATE = {
@@ -341,6 +343,13 @@ describe('redux-easy with real store', () => {
     expect(state).toEqual(initialState);
   });
 
+  test('reduxSetup with no initialState', () => {
+    setStore(null); // clears store created in beforeEach
+    reduxSetup({}); // not specifying initial state
+    const state = getState();
+    expect(state).toEqual({});
+  });
+
   test('saveState', () => {
     const state = {foo: 1, bar: {baz: 2}};
     saveState(state);
@@ -378,5 +387,107 @@ describe('redux-easy with real store', () => {
     expect(newState.foo.c2).toBe(2);
     expect(newState.foo.bar.c3).toBe(3);
     expect(newState.foo.bar.baz).toBe(value);
+  });
+
+  // This verifies that the watch function works with a watchMap
+  // which means it passes the correct state path values
+  // as a props to a React component.
+  test('watch with a watchMap', done => {
+    const TestComponent = props => {
+      expect(props.baz).toBe(initialState.bar.baz);
+
+      return null; // don't need to actually return JSX in test
+    };
+    const watchMap = {baz: 'bar.baz'};
+    const HOComponent = watch(TestComponent, watchMap);
+
+    const target = document.createElement('div');
+    reduxSetup({
+      component: <HOComponent />,
+      initialState,
+      silent: true,
+      target
+    });
+
+    setTimeout(done, 100);
+  });
+
+  // This verifies that the watch function works with a path.
+  test('watch with a path', done => {
+    const path = 'bar.baz';
+
+    const TestComponent = props => {
+      expect(props.path).toBe(path);
+      expect(props.value).toBe(initialState.bar.baz);
+
+      return null; // don't need to actually return JSX in test
+    };
+    const HOComponent = watch(TestComponent);
+
+    const target = document.createElement('div');
+    reduxSetup({
+      component: <HOComponent path={path} />,
+      initialState,
+      silent: true,
+      target
+    });
+
+    // Wait for the component to be rendered.
+    setTimeout(done, 100);
+  });
+
+  // This verifies that the watch function works with a list.
+  test('watch with a list', done => {
+    const list = [{path: 'foo'}, {path: 'bar.baz'}, {path: 'bar.qux'}];
+
+    const TestComponent = props => {
+      expect(props.list).toEqual(list);
+      expect(props.values.length).toBe(3);
+      const [v1, v2, v3] = props.values;
+      expect(v1).toBe(initialState.foo);
+      expect(v2).toBe(initialState.bar.baz);
+      expect(v3).toEqual(initialState.bar.qux);
+
+      return null; // don't need to actually return JSX in test
+    };
+    const HOComponent = watch(TestComponent);
+
+    const target = document.createElement('div');
+    reduxSetup({
+      component: <HOComponent list={list} />,
+      initialState,
+      silent: true,
+      target
+    });
+
+    // Wait for the component to be rendered.
+    setTimeout(done, 100);
+  });
+
+  // This verifies that the watch function throws when not used correctly.
+  test('watch used incorrectly', done => {
+    const TestComponent = () => null;
+    const HOComponent = watch(TestComponent);
+    const target = document.createElement('div');
+    try {
+      reduxSetup({
+        component: <HOComponent />,
+        initialState,
+        silent: true,
+        target
+      });
+
+      // Trigger a state change so mapState in the watch function will be called.
+      dispatchSet('foo', 2);
+
+      // Wait for the component to be rendered.
+      setTimeout(() =>
+        done.fail('expected error when watch is used incorrectly', 100)
+      );
+    } catch (e) {
+      const msg = 'watched components must have a watchMap, path, or list prop';
+      expect(e.message).toBe(msg);
+      done();
+    }
   });
 });
