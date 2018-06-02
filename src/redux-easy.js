@@ -14,6 +14,7 @@ let dispatchFn,
 
 const DELETE = '@@delete';
 const FILTER = '@@filter';
+export const INIT = '@@redux/INIT';
 const MAP = '@@map';
 const PATH_DELIMITER = '.';
 const PUSH = '@@push';
@@ -22,8 +23,7 @@ const STATE_KEY = 'reduxState';
 const TRANSFORM = '@@transform';
 
 const reducers = {
-  '@@INIT': () => null,
-  '@@redux/INIT': () => null,
+  [INIT]: () => null,
   '@@async': (state, payload) => payload,
   [DELETE]: deletePath,
   [FILTER]: filterPath,
@@ -277,6 +277,8 @@ export function reducer(state = initialState, action) {
   ) {
     const index = type.indexOf(' ');
     type = type.substring(0, index);
+  } else if (type.startsWith(INIT)) {
+    type = INIT;
   }
 
   const fn = reducers[type];

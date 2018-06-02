@@ -28,28 +28,32 @@
     "node": ">= 8.0"
   },
   "homepage": "https://github.com/mvolkmann/redux-easy#readme",
+  "jest": {
+    "collectCoverage": true,
+    "roots": ["src"]
+  },
   "dependencies": {
     "lodash.throttle": "^4.1.1",
-    "prop-types": "^15.6.0",
-    "react": "^16.3.1",
-    "react-dom": "^16.3.1",
+    "prop-types": "^15.6.1",
+    "react": "^16.4.0",
+    "react-dom": "^16.4.0",
     "react-redux": "^5.0.7",
-    "redux": "^3.7.2"
+    "redux": "^4.0.0"
   },
   "peerDependencies": {
-    "react": "^16.3.1",
-    "react-dom": "^16.3.1"
+    "react": "^16.4.0",
+    "react-dom": "^16.4.0"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
-    "babel-eslint": "^8.2.2",
+    "babel-eslint": "^8.2.3",
     "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
-    "babel-preset-env": "^1.6.1",
+    "babel-preset-env": "^1.7.0",
     "babel-preset-react": "^6.24.1",
-    "eslint-plugin-react": "^7.7.0",
-    "jest": "^22.4.3",
-    "prettier": "^1.11.1",
+    "eslint-plugin-react": "^7.8.2",
+    "jest": "^22.4.4",
+    "prettier": "^1.13.4",
     "prettier-eslint-cli": "^4.7.1",
     "redux-mock-store": "^1.5.1"
   }

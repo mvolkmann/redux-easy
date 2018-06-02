@@ -12,6 +12,7 @@ const {
   getState,
   getStore,
   handleAsyncAction,
+  INIT,
   loadState,
   reducer,
   reduxSetup,
@@ -51,8 +52,8 @@ describe('redux-easy', () => {
     store = getStore();
   });
 
-  test('@@INIT', () => {
-    const action = {type: '@@INIT'};
+  test('INIT', () => {
+    const action = {type: INIT};
     expect(reducer(initialState, action)).toEqual(initialState);
   });
 
