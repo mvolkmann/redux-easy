@@ -26,9 +26,7 @@
     }
   },
 
-  "plugins": [
-    "react"
-  ],
+  "plugins": ["react"],
 
   "rules": {
     "accessor-pairs": "error",
@@ -79,7 +77,6 @@
     "lines-around-comment": "off",
     "lines-around-directive": "off",
     "max-depth": ["warn", 5],
-    "max-len": ["warn", 80, 4],
     "max-lines": "off",
     "max-nested-callbacks": ["error", 8],
     "max-params": "off",
@@ -238,7 +235,10 @@
     "prefer-destructuring": "error",
     "prefer-numeric-literals": "error",
     "prefer-promise-reject-errors": "off",
-    "prefer-reflect": ["warn", {"exceptions": ["apply", "call", "delete", "getOwnPropertyNames"]}],
+    "prefer-reflect": [
+      "warn",
+      {"exceptions": ["apply", "call", "delete", "getOwnPropertyNames"]}
+    ],
     "prefer-rest-params": "error",
     "prefer-spread": "error",
     "prefer-template": "off",
@@ -269,11 +269,14 @@
     "react/jsx-no-undef": "error",
     "react/jsx-pascal-case": "error",
     "react/jsx-sort-props": "off",
-    "react/jsx-tag-spacing": ["error", {
-      "afterOpening": "never",
-      "beforeSelfClosing": "always",
-      "closingSlash": "never"
-    }],
+    "react/jsx-tag-spacing": [
+      "error",
+      {
+        "afterOpening": "never",
+        "beforeSelfClosing": "always",
+        "closingSlash": "never"
+      }
+    ],
     "react/jsx-uses-react": "error",
     "react/jsx-uses-vars": "error",
     "react/jsx-wrap-multilines": "off",
@@ -318,10 +321,13 @@
     "sort-keys": "off",
     "sort-vars": ["warn", {"ignoreCase": true}],
     "space-before-blocks": ["error", "always"],
-    "space-before-function-paren": ["error", {"anonymous": "always", "named": "never"}],
+    "space-before-function-paren": [
+      "error",
+      {"anonymous": "always", "named": "never"}
+    ],
     "space-in-parens": ["error", "never"],
     "space-infix-ops": ["error"],
-    "space-unary-ops": ["error", { "words": true, "nonwords": false }],
+    "space-unary-ops": ["error", {"words": true, "nonwords": false}],
     "spaced-comment": "off",
     "strict": "off",
     "symbol-description": "error",

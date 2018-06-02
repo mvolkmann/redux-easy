@@ -466,11 +466,16 @@ describe('redux-easy with real store', () => {
 
   // This verifies that the watch function throws when not used correctly.
   test('watch used incorrectly', done => {
+    // Suppress output from console.error.
+    const originalError = console.error;
+    console.error = () => undefined;
+
     const TestComponent = () => null;
     const HOComponent = watch(TestComponent);
     const target = document.createElement('div');
     try {
       reduxSetup({
+        //component: jsx,
         component: <HOComponent />,
         initialState,
         silent: true,
@@ -485,9 +490,13 @@ describe('redux-easy with real store', () => {
         done.fail('expected error when watch is used incorrectly', 100)
       );
     } catch (e) {
-      const msg = 'watched components must have a watchMap, path, or list prop';
-      expect(e.message).toBe(msg);
+      const expectedErrorMsg =
+        'watched components must have a watchMap, path, or list prop';
+      expect(e.message).toBe(expectedErrorMsg);
       done();
+    } finally {
+      // Reset the console.trace function.
+      console.error = originalError;
     }
   });
 });
