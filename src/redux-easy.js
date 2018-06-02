@@ -12,6 +12,7 @@ let dispatchFn,
   store,
   usingMockStore;
 
+const ASYNC = '@@async';
 const DELETE = '@@delete';
 const FILTER = '@@filter';
 export const INIT = '@@redux/INIT';
@@ -19,14 +20,14 @@ const MAP = '@@map';
 const PATH_DELIMITER = '.';
 const PUSH = '@@push';
 const SET = '@@set';
-const STATE_KEY = 'reduxState';
+export const STATE_KEY = 'reduxState';
 const TRANSFORM = '@@transform';
 
 const reducers = {
-  [INIT]: () => null,
-  '@@async': (state, payload) => payload,
+  [ASYNC]: (state, payload) => payload, // hard to get test coverage
   [DELETE]: deletePath,
   [FILTER]: filterPath,
+  [INIT]: () => null,
   [MAP]: mapPath,
   [PUSH]: pushPath,
   [SET]: setPath,
@@ -71,12 +72,7 @@ export function deletePath(state, payload) {
   return newState;
 }
 
-export function dispatch(type, payload) {
-  // dispatchFn is not set in some tests.
-  if (!dispatchFn) return;
-
-  dispatchFn({type, payload});
-}
+export const dispatch = (type, payload) => dispatchFn({type, payload});
 
 /**
  * This deletes the property at path.
@@ -176,10 +172,11 @@ export const getState = () => store.getState();
 // This is useful in tests.
 export const getStore = () => store;
 
-// exported to support tests
+// This is exported to support tests.
+// Some tests need this promise to be returned.
 export const handleAsyncAction = promise =>
   promise
-    .then(newState => dispatch('@@async', newState))
+    .then(newState => dispatch(ASYNC, newState))
     .catch(error => console.trace(error));
 
 /**
@@ -200,6 +197,7 @@ export function loadState() {
       (key, value) => (key === 'errors' ? new Set(value) : value)
     );
   } catch (e) {
+    // istanbul ignore next
     if (!silent) console.error('redux-util loadState:', e.message);
     return initialState;
   }
@@ -316,6 +314,7 @@ export function reduxSetup(options) {
   const enhancer = extension && extension();
   const preloadedState = loadState();
 
+  // store is only already set when a test sets it to mock store.
   if (!store) store = createStore(reducer, preloadedState, enhancer);
   setStore(store);
 
@@ -354,6 +353,7 @@ export function saveState(state) {
 
     sessionStorage.setItem(STATE_KEY, json);
   } catch (e) {
+    // istanbul ignore next
     if (!silent) console.error('redux-util saveState:', e.message);
     throw e;
   }

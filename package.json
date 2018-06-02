@@ -30,7 +30,8 @@
   "homepage": "https://github.com/mvolkmann/redux-easy#readme",
   "jest": {
     "collectCoverage": true,
-    "roots": ["src"]
+    "roots": ["src"],
+    "verbose": true
   },
   "dependencies": {
     "lodash.throttle": "^4.1.1",

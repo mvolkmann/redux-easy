@@ -20,10 +20,9 @@ import {
   reduxSetup,
   saveState,
   setPath,
-  setStore
+  setStore,
+  STATE_KEY
 } from './redux-easy';
-
-const STATE_KEY = 'reduxState';
 
 const INITIAL_STATE = {
   foo: 1,
@@ -33,17 +32,19 @@ const INITIAL_STATE = {
   }
 };
 
-function getStorage() {
+function mockSessionStorage() {
   const storage = {
     getItem(key) {
       return storage[key];
+    },
+    removeItem(key) {
+      delete storage[key];
     },
     setItem(key, value) {
       storage[key] = value;
     }
   };
   global.sessionStorage = storage;
-  return storage;
 }
 
 describe('redux-easy with mock store', () => {
@@ -51,12 +52,14 @@ describe('redux-easy with mock store', () => {
 
   // Mocks sessionStorage.
   beforeEach(() => {
-    getStorage();
+    mockSessionStorage();
 
     initialState = cloneDeep(INITIAL_STATE);
 
-    // Create and register a mock store.
+    // Create and register a mock store which allows
+    // retrieving an array of the dispatched actions in a test.
     setStore(configureStore([])(initialState), true);
+
     reduxSetup({initialState, silent: true});
   });
 
@@ -111,12 +114,11 @@ describe('redux-easy with mock store', () => {
   });
 
   test('handleAsyncAction', done => {
-    const store = getStore();
     const newState = {foo: 1, bar: true};
     const promise = Promise.resolve(newState);
     handleAsyncAction(promise);
     promise.then(() => {
-      const actions = store.getActions();
+      const actions = getStore().getActions();
       expect(actions.length).toBe(1);
       const [action] = actions;
       expect(action.type).toBe('@@async');
@@ -124,21 +126,42 @@ describe('redux-easy with mock store', () => {
       done();
     });
   });
+
+  test('handleAsyncAction that throws', async done => {
+    const errorMsg = 'some message';
+
+    // Mock the console.trace function.
+    const originalTrace = console.trace;
+    console.trace = msg => {
+      expect(msg).toBe(errorMsg);
+    };
+
+    const promise = Promise.reject(errorMsg);
+    try {
+      await handleAsyncAction(promise);
+      done();
+    } catch (e) {
+      done.fail('never called console.trace');
+    } finally {
+      // Reset the console.trace function.
+      console.trace = originalTrace;
+    }
+  });
 });
 
 describe('redux-easy with real store', () => {
-  let initialState, store;
+  let initialState;
 
   beforeEach(() => {
-    getStorage();
+    mockSessionStorage();
 
     initialState = cloneDeep(INITIAL_STATE);
 
-    // Use real store.
+    // Clear any previously registered store.
     setStore(null);
-    reduxSetup({initialState, silent: true});
 
-    store = getStore();
+    // Use real store.
+    reduxSetup({initialState, silent: true});
   });
 
   test('dispatchDelete with real store', () => {
@@ -161,6 +184,19 @@ describe('redux-easy with real store', () => {
     expect(actual).toEqual(['one']);
   });
 
+  test('dispatchFilter passing non-function', () => {
+    const filterFn = 'This is not a function.';
+    const msg = 'dispatchFilter must be passed a function';
+    expect(() => dispatchFilter('some.path', filterFn)).toThrow(new Error(msg));
+  });
+
+  test('dispatchFilter with path to non-array', () => {
+    const path = 'bar.baz';
+    const filterFn = value => value;
+    const msg = `dispatchFilter can only be used on arrays and ${path} is not`;
+    expect(() => dispatchFilter(path, filterFn)).toThrow(new Error(msg));
+  });
+
   //TODO: This passes when run by itself!
   test('dispatchMap with real store', () => {
     const path = 'bar.qux';
@@ -173,14 +209,17 @@ describe('redux-easy with real store', () => {
     expect(actual).toEqual(['ONE', 'TWO', 'THREE']);
   });
 
-  test('dispatchPush with real store', () => {
-    const path = 'bar.qux';
+  test('dispatchMap passing non-function', () => {
+    const filterFn = 'This is not a function.';
+    const msg = 'dispatchMap must be passed a function';
+    expect(() => dispatchMap('some.path', filterFn)).toThrow(new Error(msg));
+  });
 
-    // Remove all elements that contain the letter "t".
-    dispatchPush(path, 'four', 'five');
-
-    const actual = getPathValue(path);
-    expect(actual).toEqual(['one', 'two', 'three', 'four', 'five']);
+  test('dispatchMap with path to non-array', () => {
+    const path = 'bar.baz';
+    const filterFn = value => value;
+    const msg = `dispatchMap can only be used on arrays and ${path} is not`;
+    expect(() => dispatchMap(path, filterFn)).toThrow(new Error(msg));
   });
 
   test('dispatchPush with real store', () => {
@@ -192,6 +231,14 @@ describe('redux-easy with real store', () => {
     const actual = getPathValue(path);
     expect(actual).toEqual(['one', 'two', 'three', 'four', 'five']);
   });
+
+  test('dispatchPush with path to non-array', () => {
+    const path = 'bar.baz';
+    const filterFn = value => value;
+    const msg = `dispatchPush can only be used on arrays and ${path} is not`;
+    expect(() => dispatchPush(path, filterFn)).toThrow(new Error(msg));
+  });
+
   test('dispatchSet with real store', () => {
     const path = 'some.deep.path';
     const value = 'some value';
@@ -208,6 +255,14 @@ describe('redux-easy with real store', () => {
     expect(newValue).toEqual(initialValue + 1);
   });
 
+  test('dispatchTransform passing non-function', () => {
+    const filterFn = 'This is not a function.';
+    const msg = 'dispatchTransform must be passed a function';
+    expect(() => dispatchTransform('some.path', filterFn)).toThrow(
+      new Error(msg)
+    );
+  });
+
   // We are trusting that Redux works and are
   // just including this test for code coverage.
   test('getState', () => {
@@ -221,7 +276,8 @@ describe('redux-easy with real store', () => {
     const payload = 'foo@bar.baz';
     dispatch(type, payload);
 
-    expect(store.getState().email).toBe(payload);
+    const state = getStore().getState();
+    expect(state.email).toBe(payload);
   });
 
   test('getPathValue', () => {
@@ -242,8 +298,14 @@ describe('redux-easy with real store', () => {
     expect(actual).toBe(value);
   });
 
+  test('getPathValue with no path', () => {
+    const path = undefined;
+    expect(getPathValue(path)).toBeUndefined();
+  });
+
   test('getState', () => {
-    expect(getState()).toEqual(store.getState());
+    const state = getStore().getState();
+    expect(getState()).toEqual(state);
   });
 
   test('invalid action type', () => {
@@ -255,6 +317,12 @@ describe('redux-easy with real store', () => {
 
   test('loadState handles bad JSON', () => {
     global.sessionStorage.setItem(STATE_KEY, 'bad json');
+    const state = loadState();
+    expect(state).toEqual(initialState);
+  });
+
+  test('loadState handles state not in sessionStorage', () => {
+    global.sessionStorage.removeItem(STATE_KEY);
     const state = loadState();
     expect(state).toEqual(initialState);
   });
