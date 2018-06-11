@@ -1,6 +1,6 @@
 {
   "name": "redux-easy",
-  "version": "2.7.1",
+  "version": "2.7.2",
   "description": "provides functions that make using Redux easier",
   "main": "lib/index.js",
   "scripts": {
@@ -17,9 +17,12 @@
     "type": "git",
     "url": "git+https://github.com/mvolkmann/redux-easy.git"
   },
-  "keywords": ["React", "Redux", "state"],
-  "author":
-    "R. Mark Volkmann <r.mark.volkmann@gmail.com> (http://mvolkmann.github.io)",
+  "keywords": [
+    "React",
+    "Redux",
+    "state"
+  ],
+  "author": "R. Mark Volkmann <r.mark.volkmann@gmail.com> (http://mvolkmann.github.io)",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/mvolkmann/redux-easy/issues"
@@ -30,7 +33,9 @@
   "homepage": "https://github.com/mvolkmann/redux-easy#readme",
   "jest": {
     "collectCoverage": true,
-    "roots": ["src"],
+    "roots": [
+      "src"
+    ],
     "verbose": true
   },
   "dependencies": {
