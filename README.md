@@ -4,42 +4,42 @@ This is a set of utility functions that make it easier to use Redux.
 
 ## Benefits
 
-* No string constants are needed for action types.
-* A reducer function that switches on action type is not needed.
-* The dispatch function is accessed through a simple import rather than
+- No string constants are needed for action types.
+- A reducer function that switches on action type is not needed.
+- The dispatch function is accessed through a simple import rather than
   using the react-redux `connect` and `mapDispatchToProps` functions.
-* Actions can be dispatched by providing just a type and payload
+- Actions can be dispatched by providing just a type and payload
   rather than an action object.
-* Each action type is handled by a single reducer function
+- Each action type is handled by a single reducer function
   that is registered by action type and is simple to write.
-* Simple actions that merely set a property value in the state
+- Simple actions that merely set a property value in the state
   (the most common kind) can be dispatched without writing
   reducer functions (see `dispatchSet`).
-* Actions that modify a property based on its current value
+- Actions that modify a property based on its current value
   can be dispatched without writing reducer functions
   (see `dispatchTransform`).
-* Actions that only delete a property
+- Actions that only delete a property
   can be dispatched without writing reducer functions
   (see `dispatchDelete`).
-* Actions that only add elements to the end of an array
+- Actions that only add elements to the end of an array
   can be dispatched without writing reducer functions
   (see `dispatchPush`).
-* Actions that only remove elements from an array
+- Actions that only remove elements from an array
   can be dispatched without writing reducer functions
   (see `dispatchFilter`).
-* Actions that only modify elements in an array
+- Actions that only modify elements in an array
   can be dispatched without writing reducer functions
   (see `dispatchMap`).
-* All objects in the Redux state are automatically frozen
+- All objects in the Redux state are automatically frozen
   to prevent accidental state modification.
-* Asynchronous actions are handled in a simple way
+- Asynchronous actions are handled in a simple way
   without requiring middleware or thunks.
-* The complexity of nested/combined reducers can be bypassed.
-* Redux state is automatically saved in `sessionStorage`
+- The complexity of nested/combined reducers can be bypassed.
+- Redux state is automatically saved in `sessionStorage`
   (on every state change, but limited to once per second).
-* Redux state is automatically loaded from `sessionStorage`
+- Redux state is automatically loaded from `sessionStorage`
   when the browser is refreshed to avoid losing state.
-* Integration with redux-devtools is automatically configured.
+- Integration with redux-devtools is automatically configured.
 
 ## Example app
 
@@ -136,6 +136,30 @@ export default watch(MyComponent, {
   user: '' // path will be 'user'
 });
 ```
+
+## Path Concerns
+
+When the layout of the state changes, it is necessary
+to change state paths throughout the code.
+For small apps or apps that use a small number of state paths
+this is likely not a concern.
+For large apps, consider creating a source file that exports
+constants for the state paths (perhaps named `path-constants.js`)
+and use those when calling every redux-easy function that requires a path.
+
+For example,
+
+```js
+const GAME_HIGH_SCORE = 'game.statistics.highScore';
+const USER_CITY = 'user.address.city';
+...
+import {GAME_HIGH_SCORE, USER_CITY} from './path-constants';
+dispatchSet(USER_CITY, 'St. Louis');
+dispatchTransform(GAME_HIGH_SCORE, score => score + 1);
+```
+
+With this approach, if the layout of the state changes
+it is only necessary to update these constants.
 
 ## Form Elements Tied to State Paths
 
