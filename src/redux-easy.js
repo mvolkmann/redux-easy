@@ -275,7 +275,7 @@ export function reducer(state = initialState, action) {
   ) {
     const index = type.indexOf(' ');
     type = type.substring(0, index);
-  } else if (type.startsWith(INIT)) {
+  } else if (type.startsWith(INIT) || type === '@@INIT') {
     type = INIT;
   }
 
