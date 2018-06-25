@@ -8,6 +8,7 @@ import {createStore} from 'redux';
 
 let dispatchFn,
   initialState = {},
+  sessionStorageOptOut,
   silent,
   store,
   usingMockStore;
@@ -185,6 +186,8 @@ export const handleAsyncAction = promise =>
  * This function is only exported so it can be accessed from a test.
  */
 export function loadState() {
+  if (sessionStorageOptOut) return initialState;
+
   const {sessionStorage} = window; // not available in tests
 
   try {
@@ -301,13 +304,15 @@ export function reducer(state = initialState, action) {
  * target: element where component should be rendered
  *   (defaults to element with id "root")
  * initialState: required object
+ * sessionStorageOptOut: optional boolean
+ *   (true to not save state to session storage)
  * silent: optional boolean
  *   (true to silence expected error messages in tests)
  * Returns the render function.
  */
 export function reduxSetup(options) {
   const {component} = options;
-  ({initialState = {}, silent} = options);
+  ({initialState = {}, sessionStorageOptOut, silent} = options);
   const target = options.target || document.getElementById('root');
 
   const extension = window.__REDUX_DEVTOOLS_EXTENSION__;
@@ -351,7 +356,7 @@ export function saveState(state) {
       (key, value) => (key === 'errors' ? [...state.errors] : value)
     );
 
-    sessionStorage.setItem(STATE_KEY, json);
+    if (!sessionStorageOptOut) sessionStorage.setItem(STATE_KEY, json);
   } catch (e) {
     // istanbul ignore next
     if (!silent) console.error('redux-util saveState:', e.message);

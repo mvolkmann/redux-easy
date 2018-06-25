@@ -325,6 +325,22 @@ describe('MyComponent', () => {
 });
 ```
 
+## `reduxSetup` Options
+
+The `reduxSetup` function takes the following options,
+all specified as properties in the object passed to it:
+
+- component: top component to render
+- target: element where component should be rendered
+  (defaults to element with id "root")
+- initialState: required object
+- sessionStorageOptOut: optional boolean
+  (true to not save state to session storage)
+- silent: optional boolean
+  (true to silence expected error messages in tests)
+
+## Final Words
+
 That's everything to you need to know to use redux-easy.
 Code simply!
 
