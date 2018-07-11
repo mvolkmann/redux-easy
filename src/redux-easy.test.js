@@ -1,9 +1,9 @@
 import cloneDeep from 'lodash.clonedeep';
+import {getPathValue} from 'path-next';
 import React from 'react';
 import configureStore from 'redux-mock-store';
 import {
   addReducer,
-  deepFreeze,
   dispatch,
   dispatchDelete,
   dispatchFilter,
@@ -11,7 +11,6 @@ import {
   dispatchPush,
   dispatchSet,
   dispatchTransform,
-  getPathValue,
   getState,
   getStore,
   handleAsyncAction,
@@ -20,7 +19,6 @@ import {
   reducer,
   reduxSetup,
   saveState,
-  setPath,
   setStore,
   STATE_KEY,
   watch
@@ -33,6 +31,8 @@ const INITIAL_STATE = {
     qux: ['one', 'two', 'three']
   }
 };
+
+const getStatePathValue = path => getPathValue(getState(), path);
 
 function mockSessionStorage() {
   const storage = {
@@ -68,27 +68,6 @@ describe('redux-easy with mock store', () => {
   test('INIT', () => {
     const action = {type: INIT};
     expect(reducer(initialState, action)).toEqual(initialState);
-  });
-
-  test('deepFreeze simple', () => {
-    const obj = {foo: 1, bar: true};
-    deepFreeze(obj);
-    expect(Object.isFrozen(obj)).toBe(true);
-  });
-
-  test('deepFreeze nested', () => {
-    const obj = {foo: 1, bar: {baz: true}};
-    deepFreeze(obj);
-    expect(Object.isFrozen(obj)).toBe(true);
-    expect(Object.isFrozen(obj.bar)).toBe(true);
-  });
-
-  test('deepFreeze cyclic', () => {
-    const obj = {foo: 1};
-    obj.bar = obj;
-    deepFreeze(obj);
-    expect(Object.isFrozen(obj)).toBe(true);
-    expect(Object.isFrozen(obj.bar)).toBe(true);
   });
 
   test('dispatch', () => {
@@ -171,7 +150,7 @@ describe('redux-easy with real store', () => {
 
     dispatchDelete(path);
 
-    const actual = getPathValue(path);
+    const actual = getStatePathValue(path);
     expect(actual).toBeUndefined();
   });
 
@@ -182,7 +161,7 @@ describe('redux-easy with real store', () => {
     const filterFn = element => !/t/.test(element);
     dispatchFilter(path, filterFn);
 
-    const actual = getPathValue(path);
+    const actual = getStatePathValue(path);
     expect(actual).toEqual(['one']);
   });
 
@@ -195,11 +174,10 @@ describe('redux-easy with real store', () => {
   test('dispatchFilter with path to non-array', () => {
     const path = 'bar.baz';
     const filterFn = value => value;
-    const msg = `dispatchFilter can only be used on arrays and ${path} is not`;
+    const msg = `filterPath can only be used on arrays and ${path} is not`;
     expect(() => dispatchFilter(path, filterFn)).toThrow(new Error(msg));
   });
 
-  //TODO: This passes when run by itself!
   test('dispatchMap with real store', () => {
     const path = 'bar.qux';
 
@@ -207,7 +185,7 @@ describe('redux-easy with real store', () => {
     const mapFn = element => element.toUpperCase();
     dispatchMap(path, mapFn);
 
-    const actual = getPathValue(path);
+    const actual = getStatePathValue(path);
     expect(actual).toEqual(['ONE', 'TWO', 'THREE']);
   });
 
@@ -220,7 +198,7 @@ describe('redux-easy with real store', () => {
   test('dispatchMap with path to non-array', () => {
     const path = 'bar.baz';
     const filterFn = value => value;
-    const msg = `dispatchMap can only be used on arrays and ${path} is not`;
+    const msg = `mapPath can only be used on arrays and ${path} is not`;
     expect(() => dispatchMap(path, filterFn)).toThrow(new Error(msg));
   });
 
@@ -230,14 +208,14 @@ describe('redux-easy with real store', () => {
     // Remove all elements that contain the letter "t".
     dispatchPush(path, 'four', 'five');
 
-    const actual = getPathValue(path);
+    const actual = getStatePathValue(path);
     expect(actual).toEqual(['one', 'two', 'three', 'four', 'five']);
   });
 
   test('dispatchPush with path to non-array', () => {
     const path = 'bar.baz';
     const filterFn = value => value;
-    const msg = `dispatchPush can only be used on arrays and ${path} is not`;
+    const msg = `pushPath can only be used on arrays and ${path} is not`;
     expect(() => dispatchPush(path, filterFn)).toThrow(new Error(msg));
   });
 
@@ -245,15 +223,15 @@ describe('redux-easy with real store', () => {
     const path = 'some.deep.path';
     const value = 'some value';
     dispatchSet(path, value);
-    const actual = getPathValue(path);
+    const actual = getStatePathValue(path);
     expect(actual).toEqual(value);
   });
 
   test('dispatchTransform with real store', () => {
     const path = 'bar.baz';
-    const initialValue = getPathValue(path);
+    const initialValue = getStatePathValue(path);
     dispatchTransform(path, v => v + 1);
-    const newValue = getPathValue(path);
+    const newValue = getStatePathValue(path);
     expect(newValue).toEqual(initialValue + 1);
   });
 
@@ -284,25 +262,25 @@ describe('redux-easy with real store', () => {
 
   test('getPathValue', () => {
     let path = 'nothing.found.here';
-    let actual = getPathValue(path);
+    let actual = getStatePathValue(path);
     expect(actual).toBeUndefined();
 
     path = 'top';
     let value = 7;
     dispatchSet(path, value);
-    actual = getPathValue('top');
+    actual = getStatePathValue('top');
     expect(actual).toBe(7);
 
     path = 'foo.bar.baz';
     value = 'some value';
     dispatchSet(path, value);
-    actual = getPathValue(path);
+    actual = getStatePathValue(path);
     expect(actual).toBe(value);
   });
 
-  test('getPathValue with no path', () => {
-    const path = undefined;
-    expect(getPathValue(path)).toBeUndefined();
+  test('getPathValue with empty path', () => {
+    const path = '';
+    expect(getStatePathValue(path)).toBeUndefined();
   });
 
   test('getState', () => {
@@ -367,26 +345,6 @@ describe('redux-easy with real store', () => {
     expect(() => saveState(state)).toThrow(
       new TypeError('Converting circular structure to JSON')
     );
-  });
-
-  test('setPath', () => {
-    const state = {
-      foo: {
-        bar: {
-          baz: 1,
-          c3: 3
-        },
-        c2: 2
-      },
-      c1: 1
-    };
-    const path = 'foo.bar.baz';
-    const value = 2;
-    const newState = setPath(state, {path, value});
-    expect(newState.c1).toBe(1);
-    expect(newState.foo.c2).toBe(2);
-    expect(newState.foo.bar.c3).toBe(3);
-    expect(newState.foo.bar.baz).toBe(value);
   });
 
   // This verifies that the watch function works with a watchMap

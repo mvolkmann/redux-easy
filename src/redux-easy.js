@@ -1,4 +1,14 @@
 import {throttle} from 'lodash/function';
+import {
+  deepFreeze,
+  deletePath,
+  filterPath,
+  getPathValue,
+  mapPath,
+  pushPath,
+  setPath,
+  transformPath
+} from 'path-next';
 // ESLint says React is never used, but it is needed!
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -14,11 +24,10 @@ let dispatchFn,
   usingMockStore;
 
 const ASYNC = '@@async';
-const DELETE = '@@delete';
+const DELETE = 'th@@delete';
 const FILTER = '@@filter';
 export const INIT = '@@redux/INIT';
 const MAP = '@@map';
-const PATH_DELIMITER = '.';
 const PUSH = '@@push';
 const SET = '@@set';
 export const STATE_KEY = 'reduxState';
@@ -27,51 +36,15 @@ const TRANSFORM = '@@transform';
 const reducers = {
   [ASYNC]: (state, payload) => payload, // hard to get test coverage
   [DELETE]: deletePath,
-  [FILTER]: filterPath,
+  [FILTER]: (state, {path, value}) => filterPath(state, path, value),
   [INIT]: () => null,
-  [MAP]: mapPath,
-  [PUSH]: pushPath,
-  [SET]: setPath,
-  [TRANSFORM]: transformPath
+  [MAP]: (state, {path, value}) => mapPath(state, path, value),
+  [PUSH]: (state, {path, value}) => pushPath(state, path, ...value),
+  [SET]: (state, {path, value}) => setPath(state, path, value),
+  [TRANSFORM]: (state, {path, value}) => transformPath(state, path, value)
 };
 
 export const addReducer = (type, fn) => (reducers[type] = fn);
-
-export function deepFreeze(obj, freezing = []) {
-  if (Object.isFrozen(obj) || freezing.includes(obj)) return;
-
-  freezing.push(obj);
-
-  const props = Object.getOwnPropertyNames(obj);
-  for (const prop of props) {
-    const value = obj[prop];
-    if (typeof value === 'object' && value !== null) {
-      deepFreeze(value, freezing);
-    }
-  }
-
-  Object.freeze(obj);
-}
-
-// exported to support tests
-export function deletePath(state, payload) {
-  const path = payload;
-  const parts = path.split(PATH_DELIMITER);
-  const lastPart = parts.pop();
-  const newState = {...state};
-
-  let obj = newState;
-  for (const part of parts) {
-    const v = obj[part];
-    const newV = {...v};
-    obj[part] = newV;
-    obj = newV;
-  }
-
-  delete obj[lastPart];
-
-  return newState;
-}
 
 export const dispatch = (type, payload) => dispatchFn({type, payload});
 
@@ -128,46 +101,6 @@ export const dispatchTransform = (path, value) => {
   dispatch(TRANSFORM + ' ' + path, {path, value});
 };
 
-// exported to support tests
-export function filterPath(state, payload) {
-  const {path, value} = payload;
-  const parts = path.split(PATH_DELIMITER);
-  const lastPart = parts.pop();
-  const newState = {...state};
-
-  let obj = newState;
-  for (const part of parts) {
-    const v = obj[part];
-    const newV = {...v};
-    obj[part] = newV;
-    obj = newV;
-  }
-
-  const currentValue = obj[lastPart];
-  if (!Array.isArray(currentValue)) {
-    throw new Error(
-      `dispatchFilter can only be used on arrays and ${path} is not`
-    );
-  }
-
-  const filterFn = value;
-  obj[lastPart] = currentValue.filter(filterFn);
-
-  return newState;
-}
-
-export function getPathValue(path, state) {
-  if (!path) return undefined;
-
-  let value = state || store.getState();
-  const parts = path.split(PATH_DELIMITER);
-  for (const part of parts) {
-    value = value[part];
-    if (value === undefined) return value;
-  }
-  return value;
-}
-
 export const getState = () => store.getState();
 
 // This is useful in tests.
@@ -204,61 +137,6 @@ export function loadState() {
     if (!silent) console.error('redux-util loadState:', e.message);
     return initialState;
   }
-}
-
-// exported to support tests
-export function mapPath(state, payload) {
-  const {path, value} = payload;
-  const parts = path.split(PATH_DELIMITER);
-  const lastPart = parts.pop();
-  const newState = {...state};
-
-  let obj = newState;
-  for (const part of parts) {
-    const v = obj[part];
-    const newV = {...v};
-    obj[part] = newV;
-    obj = newV;
-  }
-
-  const currentValue = obj[lastPart];
-  if (!Array.isArray(currentValue)) {
-    throw new Error(
-      `dispatchMap can only be used on arrays and ${path} is not`
-    );
-  }
-
-  const mapFn = value;
-  obj[lastPart] = currentValue.map(mapFn);
-
-  return newState;
-}
-
-// exported to support tests
-export function pushPath(state, payload) {
-  const {path, value} = payload;
-  const parts = path.split(PATH_DELIMITER);
-  const lastPart = parts.pop();
-  const newState = {...state};
-
-  let obj = newState;
-  for (const part of parts) {
-    const v = obj[part];
-    const newV = {...v};
-    obj[part] = newV;
-    obj = newV;
-  }
-
-  const currentValue = obj[lastPart];
-  if (!Array.isArray(currentValue)) {
-    throw new Error(
-      `dispatchPush can only be used on arrays and ${path} is not`
-    );
-  }
-
-  obj[lastPart] = [...currentValue, ...value];
-
-  return newState;
 }
 
 // exported to support tests
@@ -364,51 +242,11 @@ export function saveState(state) {
   }
 }
 
-export function setPath(state, payload) {
-  const {path, value} = payload;
-  const parts = path.split(PATH_DELIMITER);
-  const lastPart = parts.pop();
-  const newState = {...state};
-
-  let obj = newState;
-  for (const part of parts) {
-    const v = obj[part];
-    const newV = {...v};
-    obj[part] = newV;
-    obj = newV;
-  }
-
-  obj[lastPart] = value;
-
-  return newState;
-}
-
 // usingMock store is set to true only in some tests.
 export function setStore(s, usingMock = false) {
   store = s;
   usingMockStore = usingMock;
   if (store) dispatchFn = store.dispatch;
-}
-
-export function transformPath(state, payload) {
-  const {path, value} = payload;
-  const parts = path.split(PATH_DELIMITER);
-  const lastPart = parts.pop();
-  const newState = {...state};
-
-  let obj = newState;
-  for (const part of parts) {
-    const v = obj[part];
-    const newV = {...v};
-    obj[part] = newV;
-    obj = newV;
-  }
-
-  const fn = value;
-  const currentValue = obj[lastPart];
-  obj[lastPart] = fn(currentValue);
-
-  return newState;
 }
 
 export function watch(component, watchMap) {
@@ -417,7 +255,7 @@ export function watch(component, watchMap) {
       const entries = Object.entries(watchMap);
       return entries.reduce((props, [name, path]) => {
         if (!path) path = name;
-        props[name] = getPathValue(path, state);
+        props[name] = getPathValue(state, path);
         return props;
       }, {});
     }
@@ -428,7 +266,7 @@ export function watch(component, watchMap) {
     // and the component takes a prop named "path",
     // this will pass a prop named "value" to the component
     // whose value is the value of the state at that path.
-    if (path) return {value: getPathValue(path, state)};
+    if (path) return {value: getPathValue(state, path)};
 
     // If no watchMap is passed to the watch function
     // and the component takes a prop named "list"
@@ -438,7 +276,7 @@ export function watch(component, watchMap) {
     // whose value is an array of the values at those state paths.
     if (list) {
       return {
-        values: list.map(obj => getPathValue(obj.path, state))
+        values: list.map(obj => getPathValue(state, obj.path))
       };
     }
 

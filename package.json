@@ -1,6 +1,6 @@
 {
   "name": "redux-easy",
-  "version": "2.8.0",
+  "version": "2.9.0",
   "description": "provides functions that make using Redux easier",
   "main": "lib/index.js",
   "scripts": {
@@ -8,10 +8,11 @@
     "clean": "rm -rf coverage lib",
     "cover": "jest src --coverage",
     "cover-open": "open coverage/lcov-report/index.html",
-    "format": "prettier-eslint --write src/**/*.js",
+    "format": "prettier --write src/**/*.js",
     "lint": "eslint --quiet src --ext .js",
     "prepublish": "babel src -d lib",
-    "test": "jest src"
+    "test": "jest src",
+    "test-watch": "jest --watch src"
   },
   "repository": {
     "type": "git",
@@ -40,28 +41,28 @@
   },
   "dependencies": {
     "lodash.throttle": "^4.1.1",
-    "prop-types": "^15.6.1",
-    "react": "^16.4.0",
-    "react-dom": "^16.4.0",
+    "path-next": "^1.0.1",
+    "prop-types": "^15.6.2",
+    "react": "^16.4.1",
+    "react-dom": "^16.4.1",
     "react-redux": "^5.0.7",
     "redux": "^4.0.0"
   },
   "peerDependencies": {
-    "react": "^16.4.0",
-    "react-dom": "^16.4.0"
+    "react": "^16.4.1",
+    "react-dom": "^16.4.1"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
-    "babel-eslint": "^8.2.3",
+    "babel-eslint": "^8.2.5",
     "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.7.0",
     "babel-preset-react": "^6.24.1",
-    "eslint-plugin-react": "^7.8.2",
-    "jest": "^22.4.4",
+    "eslint-plugin-react": "^7.10.0",
+    "jest": "^23.4.0",
     "lodash.clonedeep": "^4.5.0",
-    "prettier": "^1.13.4",
-    "prettier-eslint-cli": "^4.7.1",
-    "redux-mock-store": "^1.5.1"
+    "prettier": "^1.13.7",
+    "redux-mock-store": "^1.5.3"
   }
 }
