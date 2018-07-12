@@ -16,6 +16,8 @@ import ReactDOM from 'react-dom';
 import {connect, Provider} from 'react-redux';
 import {createStore} from 'redux';
 
+export {getPath} from 'path-next';
+
 let dispatchFn,
   initialState = {},
   sessionStorageOptOut,
