@@ -1,6 +1,6 @@
 import {bool, func, number, oneOfType, string} from 'prop-types';
 import React, {Component} from 'react';
-import {dispatch, dispatchSet, getPathValue, watch} from './redux-easy';
+import {dispatch, dispatchSet, getPath, watch} from './redux-easy';
 
 class Input extends Component {
   ref = null;
@@ -26,7 +26,7 @@ class Input extends Component {
     const {autoFocus, onEnter, path, type} = this.props;
 
     let {value} = this.props;
-    if (!value) value = getPathValue(path);
+    if (!value) value = getPath(path);
 
     const isCheckbox = type === 'checkbox';
     if (value === undefined) value = isCheckbox ? false : '';
