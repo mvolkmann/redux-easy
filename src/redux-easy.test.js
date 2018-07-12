@@ -1,5 +1,5 @@
 import cloneDeep from 'lodash.clonedeep';
-import {getPathValue} from 'path-next';
+import {getPath} from 'path-next';
 import React from 'react';
 import configureStore from 'redux-mock-store';
 import {
@@ -32,7 +32,7 @@ const INITIAL_STATE = {
   }
 };
 
-const getStatePathValue = path => getPathValue(getState(), path);
+const getStatePathValue = path => getPath(getState(), path);
 
 function mockSessionStorage() {
   const storage = {
@@ -258,29 +258,6 @@ describe('redux-easy with real store', () => {
 
     const state = getStore().getState();
     expect(state.email).toBe(payload);
-  });
-
-  test('getPathValue', () => {
-    let path = 'nothing.found.here';
-    let actual = getStatePathValue(path);
-    expect(actual).toBeUndefined();
-
-    path = 'top';
-    let value = 7;
-    dispatchSet(path, value);
-    actual = getStatePathValue('top');
-    expect(actual).toBe(7);
-
-    path = 'foo.bar.baz';
-    value = 'some value';
-    dispatchSet(path, value);
-    actual = getStatePathValue(path);
-    expect(actual).toBe(value);
-  });
-
-  test('getPathValue with empty path', () => {
-    const path = '';
-    expect(getStatePathValue(path)).toBeUndefined();
   });
 
   test('getState', () => {

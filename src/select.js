@@ -1,6 +1,6 @@
 import {func, node, number, oneOfType, string} from 'prop-types';
 import React, {Component} from 'react';
-import {dispatch, dispatchSet, getPathValue, watch} from './redux-easy';
+import {dispatch, dispatchSet, getPath, watch} from './redux-easy';
 
 class Select extends Component {
   ref = null;
@@ -17,7 +17,7 @@ class Select extends Component {
     const {children, path} = this.props;
 
     let {value} = this.props;
-    if (!value) value = getPathValue(path);
+    if (!value) value = getPath(path);
     if (value === undefined) value = '';
 
     const selectProps = {...this.props, value};

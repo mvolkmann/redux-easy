@@ -1,6 +1,6 @@
 import {arrayOf, shape, string} from 'prop-types';
 import React, {Component} from 'react';
-import {dispatch, dispatchSet, getPathValue, watch} from './redux-easy';
+import {dispatch, dispatchSet, getPath, watch} from './redux-easy';
 
 const getName = index => 'rb' + index;
 
@@ -24,7 +24,7 @@ class RadioButtons extends Component {
     const {className, list, path} = this.props;
 
     let {value} = this.props;
-    if (!value) value = getPathValue(path);
+    if (!value) value = getPath(path);
 
     const radioButtons = list.map((obj, index) => {
       const name = getName(index);

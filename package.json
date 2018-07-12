@@ -1,6 +1,6 @@
 {
   "name": "redux-easy",
-  "version": "2.9.0",
+  "version": "2.9.1",
   "description": "provides functions that make using Redux easier",
   "main": "lib/index.js",
   "scripts": {
@@ -41,7 +41,7 @@
   },
   "dependencies": {
     "lodash.throttle": "^4.1.1",
-    "path-next": "^1.0.1",
+    "path-next": "^1.1.0",
     "prop-types": "^15.6.2",
     "react": "^16.4.1",
     "react-dom": "^16.4.1",
@@ -54,7 +54,7 @@
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
-    "babel-eslint": "^8.2.5",
+    "babel-eslint": "^8.2.6",
     "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.7.0",

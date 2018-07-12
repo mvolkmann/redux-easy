@@ -1,6 +1,6 @@
 import {arrayOf, bool, shape, string} from 'prop-types';
 import React, {Component} from 'react';
-import {dispatch, dispatchSet, getPathValue, watch} from './redux-easy';
+import {dispatch, dispatchSet, getPath, watch} from './redux-easy';
 
 const getName = index => 'cb' + index;
 
@@ -24,7 +24,7 @@ class Checkboxes extends Component {
 
     const checkboxes = list.map((obj, index) => {
       const {text, path} = obj;
-      const checked = values ? values[index] : getPathValue(path);
+      const checked = values ? values[index] : getPath(path);
       const name = getName(index);
       return (
         <div key={name}>

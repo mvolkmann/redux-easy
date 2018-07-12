@@ -3,7 +3,7 @@ import {
   deepFreeze,
   deletePath,
   filterPath,
-  getPathValue,
+  getPath,
   mapPath,
   pushPath,
   setPath,
@@ -255,7 +255,7 @@ export function watch(component, watchMap) {
       const entries = Object.entries(watchMap);
       return entries.reduce((props, [name, path]) => {
         if (!path) path = name;
-        props[name] = getPathValue(state, path);
+        props[name] = getPath(state, path);
         return props;
       }, {});
     }
@@ -266,7 +266,7 @@ export function watch(component, watchMap) {
     // and the component takes a prop named "path",
     // this will pass a prop named "value" to the component
     // whose value is the value of the state at that path.
-    if (path) return {value: getPathValue(state, path)};
+    if (path) return {value: getPath(state, path)};
 
     // If no watchMap is passed to the watch function
     // and the component takes a prop named "list"
@@ -276,7 +276,7 @@ export function watch(component, watchMap) {
     // whose value is an array of the values at those state paths.
     if (list) {
       return {
-        values: list.map(obj => getPathValue(state, obj.path))
+        values: list.map(obj => getPath(state, obj.path))
       };
     }
 

@@ -1,6 +1,6 @@
 import {func, string} from 'prop-types';
 import React, {Component} from 'react';
-import {dispatch, dispatchSet, getPathValue, watch} from './redux-easy';
+import {dispatch, dispatchSet, getPath, watch} from './redux-easy';
 
 class TextArea extends Component {
   ref = null;
@@ -17,7 +17,7 @@ class TextArea extends Component {
     const {path} = this.props;
 
     let {value} = this.props;
-    if (!value) value = getPathValue(path);
+    if (!value) value = getPath(path);
 
     const textAreaProps = {...this.props, value};
     delete textAreaProps.dispatch;
