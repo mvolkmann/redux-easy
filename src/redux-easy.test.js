@@ -1,5 +1,4 @@
 import cloneDeep from 'lodash.clonedeep';
-import {getPath} from 'path-next';
 import React from 'react';
 import configureStore from 'redux-mock-store';
 import {
@@ -11,6 +10,7 @@ import {
   dispatchPush,
   dispatchSet,
   dispatchTransform,
+  getPath,
   getState,
   getStore,
   handleAsyncAction,
@@ -31,8 +31,6 @@ const INITIAL_STATE = {
     qux: ['one', 'two', 'three']
   }
 };
-
-const getStatePathValue = path => getPath(getState(), path);
 
 function mockSessionStorage() {
   const storage = {
@@ -150,7 +148,7 @@ describe('redux-easy with real store', () => {
 
     dispatchDelete(path);
 
-    const actual = getStatePathValue(path);
+    const actual = getPath(path);
     expect(actual).toBeUndefined();
   });
 
@@ -161,7 +159,7 @@ describe('redux-easy with real store', () => {
     const filterFn = element => !/t/.test(element);
     dispatchFilter(path, filterFn);
 
-    const actual = getStatePathValue(path);
+    const actual = getPath(path);
     expect(actual).toEqual(['one']);
   });
 
@@ -185,7 +183,7 @@ describe('redux-easy with real store', () => {
     const mapFn = element => element.toUpperCase();
     dispatchMap(path, mapFn);
 
-    const actual = getStatePathValue(path);
+    const actual = getPath(path);
     expect(actual).toEqual(['ONE', 'TWO', 'THREE']);
   });
 
@@ -208,7 +206,7 @@ describe('redux-easy with real store', () => {
     // Remove all elements that contain the letter "t".
     dispatchPush(path, 'four', 'five');
 
-    const actual = getStatePathValue(path);
+    const actual = getPath(path);
     expect(actual).toEqual(['one', 'two', 'three', 'four', 'five']);
   });
 
@@ -223,15 +221,15 @@ describe('redux-easy with real store', () => {
     const path = 'some.deep.path';
     const value = 'some value';
     dispatchSet(path, value);
-    const actual = getStatePathValue(path);
+    const actual = getPath(path);
     expect(actual).toEqual(value);
   });
 
   test('dispatchTransform with real store', () => {
     const path = 'bar.baz';
-    const initialValue = getStatePathValue(path);
+    const initialValue = getPath(path);
     dispatchTransform(path, v => v + 1);
-    const newValue = getStatePathValue(path);
+    const newValue = getPath(path);
     expect(newValue).toEqual(initialValue + 1);
   });
 

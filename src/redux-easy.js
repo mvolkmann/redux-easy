@@ -3,7 +3,7 @@ import {
   deepFreeze,
   deletePath,
   filterPath,
-  getPath,
+  getPath as realGetPath,
   mapPath,
   pushPath,
   setPath,
@@ -15,8 +15,6 @@ import ReactDOM from 'react-dom';
 // ESLint says Provide is never used, but it is!
 import {connect, Provider} from 'react-redux';
 import {createStore} from 'redux';
-
-export {getPath} from 'path-next';
 
 let dispatchFn,
   initialState = {},
@@ -103,7 +101,12 @@ export const dispatchTransform = (path, value) => {
   dispatch(TRANSFORM + ' ' + path, {path, value});
 };
 
-export const getState = () => store.getState();
+export const getState = () => {
+  if (!store) throw new Error('store is not set');
+  return store.getState();
+};
+
+export const getPath = path => realGetPath(getState(), path);
 
 // This is useful in tests.
 export const getStore = () => store;
@@ -257,7 +260,7 @@ export function watch(component, watchMap) {
       const entries = Object.entries(watchMap);
       return entries.reduce((props, [name, path]) => {
         if (!path) path = name;
-        props[name] = getPath(state, path);
+        props[name] = realGetPath(state, path);
         return props;
       }, {});
     }
@@ -268,7 +271,7 @@ export function watch(component, watchMap) {
     // and the component takes a prop named "path",
     // this will pass a prop named "value" to the component
     // whose value is the value of the state at that path.
-    if (path) return {value: getPath(state, path)};
+    if (path) return {value: realGetPath(state, path)};
 
     // If no watchMap is passed to the watch function
     // and the component takes a prop named "list"
@@ -278,7 +281,7 @@ export function watch(component, watchMap) {
     // whose value is an array of the values at those state paths.
     if (list) {
       return {
-        values: list.map(obj => getPath(state, obj.path))
+        values: list.map(obj => realGetPath(state, obj.path))
       };
     }
 
