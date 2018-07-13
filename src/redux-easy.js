@@ -24,7 +24,7 @@ let dispatchFn,
   usingMockStore;
 
 const ASYNC = '@@async';
-const DELETE = 'th@@delete';
+const DELETE = '@@delete';
 const FILTER = '@@filter';
 export const INIT = '@@redux/INIT';
 const MAP = '@@map';
