@@ -35,7 +35,7 @@ const TRANSFORM = '@@transform';
 
 const reducers = {
   [ASYNC]: (state, payload) => payload, // hard to get test coverage
-  [DELETE]: deletePath,
+  [DELETE]: (state, payload) => deletePath(state, payload),
   [FILTER]: (state, {path, value}) => filterPath(state, path, value),
   [INIT]: () => null,
   [MAP]: (state, {path, value}) => mapPath(state, path, value),
