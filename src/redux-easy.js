@@ -32,6 +32,7 @@ const PUSH = '@@push';
 const SET = '@@set';
 export const STATE_KEY = 'reduxState';
 const TRANSFORM = '@@transform';
+const VERSION_KEY = '@reduxEasyVersion';
 
 const reducers = {
   [ASYNC]: (state, payload) => payload, // hard to get test coverage
@@ -43,6 +44,8 @@ const reducers = {
   [SET]: (state, {path, value}) => setPath(state, path, value),
   [TRANSFORM]: (state, {path, value}) => transformPath(state, path, value)
 };
+
+let version;
 
 export const addReducer = (type, fn) => (reducers[type] = fn);
 
@@ -128,15 +131,21 @@ export function loadState() {
 
   const {sessionStorage} = window; // not available in tests
 
+  // If the version passed to reduxEasy does not match the version
+  // last saved in sessionStorage, assume that the shape of the state
+  // may have changed and revert to initialState.
+  const ssVersion = sessionStorage.getItem(VERSION_KEY);
+  if (String(version) !== ssVersion) {
+    sessionStorage.setItem(STATE_KEY, initialState);
+    sessionStorage.setItem(VERSION_KEY, version);
+    return initialState;
+  }
+
   try {
     const json = sessionStorage ? sessionStorage.getItem(STATE_KEY) : null;
     if (!json) return initialState;
 
-    // When parsing errors Array, change to a Set.
-    return JSON.parse(
-      json,
-      (key, value) => (key === 'errors' ? new Set(value) : value)
-    );
+    return JSON.parse(json);
   } catch (e) {
     // istanbul ignore next
     if (!silent) console.error('redux-util loadState:', e.message);
@@ -191,11 +200,14 @@ export function reducer(state = initialState, action) {
  *   (true to not save state to session storage)
  * silent: optional boolean
  *   (true to silence expected error messages in tests)
+ * version: a version string that should be changed
+ *   when the shape of the state changes
  * Returns the render function.
  */
 export function reduxSetup(options) {
   const {component} = options;
-  ({initialState = {}, sessionStorageOptOut, silent} = options);
+  ({initialState = {}, sessionStorageOptOut, silent, version = null} = options);
+
   const target = options.target || document.getElementById('root');
 
   const extension = window.__REDUX_DEVTOOLS_EXTENSION__;
@@ -233,11 +245,7 @@ export function reduxSetup(options) {
  */
 export function saveState(state) {
   try {
-    // When stringifying errors Set, change to an Array.
-    const json = JSON.stringify(
-      state,
-      (key, value) => (key === 'errors' ? [...state.errors] : value)
-    );
+    const json = JSON.stringify(state);
 
     if (!sessionStorageOptOut) sessionStorage.setItem(STATE_KEY, json);
   } catch (e) {

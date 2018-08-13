@@ -49,6 +49,7 @@ function mockSessionStorage() {
 
 describe('redux-easy with mock store', () => {
   let initialState;
+  let version = 0;
 
   // Mocks sessionStorage.
   beforeEach(() => {
@@ -60,7 +61,8 @@ describe('redux-easy with mock store', () => {
     // retrieving an array of the dispatched actions in a test.
     setStore(configureStore([])(initialState), true);
 
-    reduxSetup({initialState, silent: true});
+    version++;
+    reduxSetup({initialState, silent: true, version});
   });
 
   test('INIT', () => {
@@ -130,6 +132,7 @@ describe('redux-easy with mock store', () => {
 
 describe('redux-easy with real store', () => {
   let initialState;
+  let version = 0;
 
   beforeEach(() => {
     mockSessionStorage();
@@ -140,7 +143,8 @@ describe('redux-easy with real store', () => {
     setStore(null);
 
     // Use real store.
-    reduxSetup({initialState, silent: true});
+    version++;
+    reduxSetup({initialState, silent: true, version});
   });
 
   test('dispatchDelete with real store', () => {
@@ -304,7 +308,7 @@ describe('redux-easy with real store', () => {
   });
 
   test('saveState', () => {
-    const state = {foo: 1, bar: {baz: 2}};
+    const state = {foo: 2, bar: {baz: 3}};
     saveState(state);
 
     const actual = loadState();
