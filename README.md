@@ -137,6 +137,41 @@ export default watch(MyComponent, {
 });
 ```
 
+## Versions
+
+By default redux-easy saves state data in `sessionStorage`
+so it can be retrieved if the user refreshes the browser.
+During development when the shape of the initial state changes, it is
+desirable to replace what is in `sessionStorage` with the new initial state.
+
+One way do to this is to close the browser tab and open a new one.
+If this isn't done, the application may not work properly because it
+is expecting different data than what will be used from `sessionStorage`.
+
+A way to force the new initial state to be used is to supply a
+version string or number in the options object passed to `reduxSetup`.
+Whenever redux-easy sees a new version,
+it replaces the data in `sessionStorage` with the current
+`initialState` value in the options object passed to `reduxSetup`.
+
+## Sensitive Data
+
+When the state contains sensitive data
+such as passwords and credit card numbers,
+it is a good idea to prevent that data from being
+added to the Redux store or written to `sessionStorage`.
+
+One way to do this is to add `replacerFn` and `reviverFn` functions
+to the options object that is passed to `reduxSetup`.
+These functions are similar to the optional `replacer` and `reviver` parameters
+used by `JSON.stringify` and `JSON.parse`.
+Both are passed a state object.
+If they wish to change it in any way,
+including deleting, modifying, and adding properties,
+they should make a copy of the state object,
+modify the copy, and return it.
+Consider using the lodash function `deepClone` to create the copy.
+
 ## Path Concerns
 
 When the layout of the state changes, it is necessary
