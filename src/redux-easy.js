@@ -132,9 +132,8 @@ const identityFn = state => state;
  */
 export function loadState() {
   const cleanState = replacerFn(initialState);
-  const newState = reviverFn(cleanState);
 
-  if (sessionStorageOptOut) return newState;
+  if (sessionStorageOptOut) return cleanState;
 
   const {sessionStorage} = window; // not available in tests
 
@@ -145,13 +144,13 @@ export function loadState() {
   if (version === null || String(version) !== ssVersion) {
     sessionStorage.setItem(STATE_KEY, cleanState);
     sessionStorage.setItem(VERSION_KEY, version);
-    return newState;
+    return cleanState;
   }
 
   let json;
   try {
     json = sessionStorage ? sessionStorage.getItem(STATE_KEY) : null;
-    if (!json || json === '""') return newState;
+    if (!json || json === '""') return cleanState;
 
     const state = JSON.parse(json);
     const revived = reviverFn(state);
@@ -245,7 +244,7 @@ export function reduxSetup(options) {
     // See the video from Dan Abramov at
     // https://egghead.io/lessons/
     // javascript-redux-persisting-the-state-to-the-local-storage.
-    store.subscribe(throttle(() => saveState(store.getState()), 1000));
+    store.subscribe(throttle(() => saveState(store.getState(), 1000)));
     if (options.render) store.subscribe(options.render);
   }
 
@@ -287,6 +286,7 @@ export function setStore(s, usingMock = false) {
 
 export function watch(component, watchMap) {
   function mapState(state, ownProps) {
+    state = reviverFn(state);
     if (watchMap) {
       const entries = Object.entries(watchMap);
       return entries.reduce((props, [name, path]) => {
