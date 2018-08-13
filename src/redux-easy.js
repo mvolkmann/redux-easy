@@ -18,6 +18,8 @@ import {createStore} from 'redux';
 
 let dispatchFn,
   initialState = {},
+  replacerFn,
+  reviverFn,
   sessionStorageOptOut,
   silent,
   store,
@@ -106,7 +108,7 @@ export const dispatchTransform = (path, value) => {
 
 export const getState = () => {
   if (!store) throw new Error('store is not set');
-  return store.getState();
+  return reviverFn(store.getState());
 };
 
 export const getPath = path => realGetPath(getState(), path);
@@ -121,13 +123,18 @@ export const handleAsyncAction = promise =>
     .then(newState => dispatch(ASYNC, newState))
     .catch(error => console.trace(error));
 
+const identityFn = state => state;
+
 /**
  * This is called on app startup and
  * again each time the browser window is refreshed.
  * This function is only exported so it can be accessed from a test.
  */
 export function loadState() {
-  if (sessionStorageOptOut) return initialState;
+  const cleanState = replacerFn(initialState);
+  const newState = reviverFn(cleanState);
+
+  if (sessionStorageOptOut) return newState;
 
   const {sessionStorage} = window; // not available in tests
 
@@ -135,21 +142,24 @@ export function loadState() {
   // last saved in sessionStorage, assume that the shape of the state
   // may have changed and revert to initialState.
   const ssVersion = sessionStorage.getItem(VERSION_KEY);
-  if (String(version) !== ssVersion) {
-    sessionStorage.setItem(STATE_KEY, initialState);
+  if (version === null || String(version) !== ssVersion) {
+    sessionStorage.setItem(STATE_KEY, cleanState);
     sessionStorage.setItem(VERSION_KEY, version);
-    return initialState;
+    return newState;
   }
 
+  let json;
   try {
-    const json = sessionStorage ? sessionStorage.getItem(STATE_KEY) : null;
-    if (!json) return initialState;
+    json = sessionStorage ? sessionStorage.getItem(STATE_KEY) : null;
+    if (!json || json === '""') return newState;
 
-    return JSON.parse(json);
+    const state = JSON.parse(json);
+    const revived = reviverFn(state);
+    return revived;
   } catch (e) {
     // istanbul ignore next
     if (!silent) console.error('redux-util loadState:', e.message);
-    return initialState;
+    return cleanState;
   }
 }
 
@@ -196,6 +206,12 @@ export function reducer(state = initialState, action) {
  * target: element where component should be rendered
  *   (defaults to element with id "root")
  * initialState: required object
+ * replacerFn: function that is passed the state before it is saved in
+ *   sessionStorage and returns the state that should actually be saved there;
+ *   can be used to avoid exposing sensitive data
+ * reviverFn: function that is passed the state after it is retrieved from
+ *   sessionStorage and returns the state that the app should actually use;
+ *   can be used to supply sensitive data that is not in sessionStorage
  * sessionStorageOptOut: optional boolean
  *   (true to not save state to session storage)
  * silent: optional boolean
@@ -206,7 +222,14 @@ export function reducer(state = initialState, action) {
  */
 export function reduxSetup(options) {
   const {component} = options;
-  ({initialState = {}, sessionStorageOptOut, silent, version = null} = options);
+  ({
+    initialState = {},
+    replacerFn = identityFn,
+    reviverFn = identityFn,
+    sessionStorageOptOut,
+    silent,
+    version = null
+  } = options);
 
   const target = options.target || document.getElementById('root');
 
@@ -245,7 +268,7 @@ export function reduxSetup(options) {
  */
 export function saveState(state) {
   try {
-    const json = JSON.stringify(state);
+    const json = JSON.stringify(replacerFn(state));
 
     if (!sessionStorageOptOut) sessionStorage.setItem(STATE_KEY, json);
   } catch (e) {

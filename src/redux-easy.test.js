@@ -412,7 +412,6 @@ describe('redux-easy with real store', () => {
     const target = document.createElement('div');
     try {
       reduxSetup({
-        //component: jsx,
         component: <HOComponent />,
         initialState,
         silent: true,
@@ -435,5 +434,32 @@ describe('redux-easy with real store', () => {
       // Reset the console.trace function.
       console.error = originalError;
     }
+  });
+});
+
+describe('redux-easy with sensitive data', () => {
+  beforeEach(() => {
+    mockSessionStorage();
+
+    // Clear any previously registered store.
+    setStore(null);
+  });
+
+  test('replacer and reviver', () => {
+    const initialState = {password: 'secret'};
+    const replacerFn = state => {
+      const copy = cloneDeep(state);
+      delete copy.password;
+      return copy;
+    };
+    const safePassword = 'not-secret';
+    const reviverFn = state => {
+      const copy = cloneDeep(state);
+      copy.password = safePassword;
+      return copy;
+    };
+    reduxSetup({initialState, replacerFn, reviverFn});
+    const state = getState();
+    expect(state.password).toBe(safePassword);
   });
 });
