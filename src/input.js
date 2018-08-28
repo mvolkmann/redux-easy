@@ -3,6 +3,19 @@ import React, {Component} from 'react';
 import {dispatch, dispatchSet, getPath, watch} from './redux-easy';
 
 class Input extends Component {
+  static propTypes = {
+    action: string, // action to be dispatched on change
+    autoFocus: bool,
+    max: number,
+    min: number,
+    onChange: func, // called on every change to value
+    onEnter: func, // called if user presses enter key
+    path: string, // state path that is updated
+    type: string, // type of the HTML input
+    // optional current value (obtained from state at path if not specified)
+    value: oneOfType([string, number, bool])
+  };
+
   ref = null;
 
   handleChange = event => {
@@ -56,16 +69,5 @@ class Input extends Component {
     );
   }
 }
-
-Input.propTypes = {
-  action: string, // action to be dispatched on change
-  autoFocus: bool,
-  onChange: func, // called on every change to value
-  onEnter: func, // called if user presses enter key
-  path: string, // state path that is updated
-  type: string, // type of the HTML input
-  // optional current value (obtained from state at path if not specified)
-  value: oneOfType([string, number, bool])
-};
 
 export default watch(Input);
