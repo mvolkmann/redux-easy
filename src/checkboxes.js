@@ -24,7 +24,7 @@ class Checkboxes extends Component {
 
     const checkboxes = list.map((obj, index) => {
       const {text, path} = obj;
-      const checked = values ? values[index] : getPath(path);
+      const checked = Boolean(values ? values[index] : getPath(path));
       const name = getName(index);
       return (
         <div key={name}>
