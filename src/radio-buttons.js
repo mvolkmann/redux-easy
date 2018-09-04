@@ -2,8 +2,6 @@ import {arrayOf, shape, string} from 'prop-types';
 import React, {Component} from 'react';
 import {dispatch, dispatchSet, getPath, watch} from './redux-easy';
 
-const getName = index => 'rb' + index;
-
 /**
  * This component renders a set of radio buttons.
  * The `list` prop specifies the text and value
@@ -13,6 +11,20 @@ const getName = index => 'rb' + index;
  * Specify a `className` prop to enable styling the radio-buttons.
  */
 class RadioButtons extends Component {
+  static propTypes = {
+    'data-testid': string,
+    action: string,
+    className: string,
+    list: arrayOf(
+      shape({
+        text: string.isRequired,
+        value: string
+      })
+    ).isRequired,
+    path: string,
+    value: string
+  };
+
   handleChange = event => {
     const {action, path} = this.props;
     const {value} = event.target;
@@ -23,20 +35,24 @@ class RadioButtons extends Component {
   render() {
     const {className, list, path} = this.props;
 
+    const extraProps = {};
+    const testId = this.props['data-testid'];
+
     let {value} = this.props;
     if (!value) value = getPath(path);
 
-    const radioButtons = list.map((obj, index) => {
-      const name = getName(index);
+    const radioButtons = list.map(obj => {
+      if (testId) extraProps['data-testid'] = testId + '-' + obj.value;
       return (
-        <div key={name}>
+        <div key={obj.value}>
           <input
             checked={obj.value === value}
-            className={name}
+            className={obj.value}
             name={path}
             onChange={this.handleChange}
             type="radio"
             value={obj.value}
+            {...extraProps}
           />
           <label>{obj.text}</label>
         </div>
@@ -46,18 +62,5 @@ class RadioButtons extends Component {
     return <div className={'radio-buttons ' + className}>{radioButtons}</div>;
   }
 }
-
-RadioButtons.propTypes = {
-  action: string,
-  className: string,
-  list: arrayOf(
-    shape({
-      text: string.isRequired,
-      value: string
-    })
-  ).isRequired,
-  path: string,
-  value: string
-};
 
 export default watch(RadioButtons);
