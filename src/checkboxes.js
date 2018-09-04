@@ -11,6 +11,19 @@ const getName = index => 'cb' + index;
  * Specify a `className` prop to enable styling the checkboxes.
  */
 class Checkboxes extends Component {
+  static propTypes = {
+    'data-testid': string,
+    action: string,
+    className: string,
+    list: arrayOf(
+      shape({
+        text: string.isRequired,
+        path: string
+      })
+    ).isRequired,
+    values: arrayOf(bool).isRequired
+  };
+
   handleChange = (text, event) => {
     const {action, list} = this.props;
     const {path} = list.find(obj => obj.text === text);
@@ -22,10 +35,14 @@ class Checkboxes extends Component {
   render() {
     const {className, list, values} = this.props;
 
+    const extraProps = {};
+    const testId = this.props['data-testid'];
+
     const checkboxes = list.map((obj, index) => {
       const {text, path} = obj;
       const checked = Boolean(values ? values[index] : getPath(path));
       const name = getName(index);
+      if (testId) extraProps['data-testid'] = testId + '-' + name;
       return (
         <div key={name}>
           <input
@@ -33,6 +50,7 @@ class Checkboxes extends Component {
             checked={checked}
             onChange={e => this.handleChange(text, e)}
             type="checkbox"
+            {...extraProps}
           />
           <label>{text}</label>
         </div>
@@ -42,17 +60,5 @@ class Checkboxes extends Component {
     return <div className={'checkboxes ' + className}>{checkboxes}</div>;
   }
 }
-
-Checkboxes.propTypes = {
-  action: string,
-  className: string,
-  list: arrayOf(
-    shape({
-      text: string.isRequired,
-      path: string
-    })
-  ).isRequired,
-  values: arrayOf(bool).isRequired
-};
 
 export default watch(Checkboxes);

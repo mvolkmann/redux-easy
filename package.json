@@ -1,6 +1,6 @@
 {
   "name": "redux-easy",
-  "version": "2.10.3",
+  "version": "2.10.4",
   "description": "provides functions that make using Redux easier",
   "main": "lib/index.js",
   "scripts": {
