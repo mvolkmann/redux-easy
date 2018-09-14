@@ -48,11 +48,12 @@ class Checkboxes extends Component {
           <input
             className={name}
             checked={checked}
+            id={name}
             onChange={e => this.handleChange(text, e)}
             type="checkbox"
             {...extraProps}
           />
-          <label>{text}</label>
+          <label htmlFor={name}>{text}</label>
         </div>
       );
     });
