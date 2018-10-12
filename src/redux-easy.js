@@ -16,7 +16,8 @@ import ReactDOM from 'react-dom';
 import {connect, Provider} from 'react-redux';
 import {createStore} from 'redux';
 
-let dispatchFn,
+let actionListener,
+  dispatchFn,
   initialState = {},
   replacerFn,
   reviverFn,
@@ -51,7 +52,10 @@ let version;
 
 export const addReducer = (type, fn) => (reducers[type] = fn);
 
-export const dispatch = (type, payload) => dispatchFn({type, payload});
+export function dispatch(type, payload) {
+  if (actionListener) actionListener(type, payload);
+  dispatchFn({type, payload});
+}
 
 /**
  * This deletes the property at path.
@@ -202,6 +206,8 @@ export function reducer(state = initialState, action) {
 /**
  * Pass an object with these properties:
  * component: top component to render
+ * actionListener: function that is passed the type and payload
+ *   of each dispatched action (useful for gathering analytics)
  * target: element where component should be rendered
  *   (defaults to element with id "root")
  * initialState: required object
@@ -222,6 +228,7 @@ export function reducer(state = initialState, action) {
 export function reduxSetup(options) {
   const {component} = options;
   ({
+    actionListener,
     initialState = {},
     replacerFn = identityFn,
     reviverFn = identityFn,
