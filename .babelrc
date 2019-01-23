@@ -1,7 +1,17 @@
 {
   "plugins": [
-    ["transform-class-properties", { "spec": true }],
+    ["transform-class-properties", {"spec": true}],
     "transform-object-rest-spread"
   ],
-  "presets": ["env", "react"]
+  "presets": [
+    [
+      "env",
+      {
+        "targets": {
+          "browsers": ["last 2 versions", "ie >= 11"]
+        }
+      }
+    ],
+    "react"
+  ]
 }
