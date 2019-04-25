@@ -59,7 +59,7 @@ describe('redux-easy with mock store', () => {
 
     // Create and register a mock store which allows
     // retrieving an array of the dispatched actions in a test.
-    setStore(configureStore([])(initialState), true);
+    setStore(configureStore([])(initialState));
 
     version++;
     reduxSetup({initialState, silent: true, version});

@@ -12,9 +12,9 @@ import {dispatch, dispatchSet, getPath, watch} from './redux-easy';
  */
 class RadioButtons extends Component {
   static propTypes = {
-    'data-testid': string,
     action: string,
     className: string,
+    'data-testid': string,
     list: arrayOf(
       shape({
         text: string.isRequired,

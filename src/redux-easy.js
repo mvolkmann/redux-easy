@@ -23,8 +23,7 @@ let actionListener,
   reviverFn,
   sessionStorageOptOut,
   silent,
-  store,
-  usingMockStore;
+  store;
 
 const ASYNC = '@@async';
 const DELETE = '@@delete';
@@ -244,10 +243,10 @@ export function reduxSetup(options) {
   const preloadedState = loadState();
 
   // store is only already set when a test sets it to mock store.
-  if (!store) store = createStore(reducer, preloadedState, enhancer);
-  setStore(store);
+  if (!store) {
+    store = createStore(reducer, preloadedState, enhancer);
+    setStore(store);
 
-  if (!usingMockStore) {
     // See the video from Dan Abramov at
     // https://egghead.io/lessons/
     // javascript-redux-persisting-the-state-to-the-local-storage.
@@ -284,10 +283,8 @@ export function saveState(state) {
   }
 }
 
-// usingMock store is set to true only in some tests.
-export function setStore(s, usingMock = false) {
+export function setStore(s) {
   store = s;
-  usingMockStore = usingMock;
   if (store) dispatchFn = store.dispatch;
 }
 

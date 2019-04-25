@@ -12,9 +12,9 @@ const getName = index => 'cb' + index;
  */
 class Checkboxes extends Component {
   static propTypes = {
-    'data-testid': string,
     action: string,
     className: string,
+    'data-testid': string,
     list: arrayOf(
       shape({
         text: string.isRequired,
