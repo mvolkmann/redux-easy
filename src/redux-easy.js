@@ -288,7 +288,6 @@ export function setStore(s) {
 
 export function watch(component, watchMap) {
   function mapState(state, ownProps) {
-    console.log('redux-easy.js mapState: reviverFn =', reviverFn);
     state = reviverFn(state);
     if (watchMap) {
       const entries = Object.entries(watchMap);
