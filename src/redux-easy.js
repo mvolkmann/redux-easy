@@ -17,7 +17,6 @@ import {connect, Provider} from 'react-redux';
 import {createStore} from 'redux';
 
 let actionListener,
-  dispatchFn,
   initialState = {},
   replacerFn,
   reviverFn,
@@ -53,7 +52,7 @@ export const addReducer = (type, fn) => (reducers[type] = fn);
 
 export function dispatch(type, payload) {
   if (actionListener) actionListener(type, payload);
-  dispatchFn({type, payload});
+  store.dispatch({type, payload});
 }
 
 /**
@@ -285,11 +284,11 @@ export function saveState(state) {
 
 export function setStore(s) {
   store = s;
-  if (store) dispatchFn = store.dispatch;
 }
 
 export function watch(component, watchMap) {
   function mapState(state, ownProps) {
+    console.log('redux-easy.js mapState: reviverFn =', reviverFn);
     state = reviverFn(state);
     if (watchMap) {
       const entries = Object.entries(watchMap);

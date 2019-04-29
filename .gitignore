@@ -1,6 +1,6 @@
-build
-coverage
-lib
-node_modules
+build/
+coverage/
+lib/
+node_modules/
 .*.swp
 .DS_Store

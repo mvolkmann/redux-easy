@@ -338,7 +338,11 @@ const initialState = {
 
 describe('MyComponent', () => {
   test('handle firstName change', () => {
-    const store = reduxSetup({initialState, mock: true});
+    // Create and register a mock store which allows
+    // retrieving an array of the dispatched actions in a test.
+    setStore(configureStore([])(initialState));
+
+    const store = reduxSetup({initialState, silent: true});
     const jsx = (
       <Provider store={store}>
         <Login />
