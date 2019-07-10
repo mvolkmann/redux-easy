@@ -143,7 +143,7 @@ export function loadState() {
   // last saved in sessionStorage, assume that the shape of the state
   // may have changed and revert to initialState.
   const ssVersion = sessionStorage.getItem(VERSION_KEY);
-  if (version === null || String(version) !== ssVersion) {
+  if (String(version) !== ssVersion) {
     sessionStorage.setItem(STATE_KEY, cleanState);
     sessionStorage.setItem(VERSION_KEY, version);
     return cleanState;
