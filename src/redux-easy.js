@@ -15,6 +15,7 @@ import ReactDOM from 'react-dom';
 // ESLint says Provide is never used, but it is!
 import {connect, Provider} from 'react-redux';
 import {createStore} from 'redux';
+import {parse, stringify} from 'flatted/esm';
 
 let actionListener,
   initialState = {},
@@ -154,7 +155,7 @@ export function loadState() {
     json = sessionStorage ? sessionStorage.getItem(STATE_KEY) : null;
     if (!json || json === '""') return cleanState;
 
-    const state = JSON.parse(json);
+    const state = parse(json);
     const revived = reviverFn(state);
     return revived;
   } catch (e) {
@@ -273,7 +274,7 @@ export function reduxSetup(options) {
 export function saveState(state) {
   if (sessionStorageOptOut) return;
   try {
-    const json = JSON.stringify(replacerFn(state));
+    const json = stringify(replacerFn(state));
     sessionStorage.setItem(STATE_KEY, json);
   } catch (e) {
     // istanbul ignore next
