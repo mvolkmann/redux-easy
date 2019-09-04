@@ -271,10 +271,10 @@ export function reduxSetup(options) {
  * It is only exported so it can be accessed from a test.
  */
 export function saveState(state) {
+  if (sessionStorageOptOut) return;
   try {
     const json = JSON.stringify(replacerFn(state));
-
-    if (!sessionStorageOptOut) sessionStorage.setItem(STATE_KEY, json);
+    sessionStorage.setItem(STATE_KEY, json);
   } catch (e) {
     // istanbul ignore next
     if (!silent) console.error('redux-util saveState:', e.message);
