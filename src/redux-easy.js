@@ -15,7 +15,7 @@ import ReactDOM from 'react-dom';
 // ESLint says Provide is never used, but it is!
 import {connect, Provider} from 'react-redux';
 import {createStore} from 'redux';
-import {parse, stringify} from 'flatted/esm';
+import {parse, stringify} from 'flatted/cjs';
 
 let actionListener,
   initialState = {},
