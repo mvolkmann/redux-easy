@@ -315,17 +315,6 @@ describe('redux-easy with real store', () => {
     expect(actual).toEqual(state);
   });
 
-  test('saveState handles bad JSON', () => {
-    // Create an object that contains a circular reference.
-    // JSON.stringify will throw when passed this.
-    const state = {};
-    state.circular = state;
-
-    expect(() => saveState(state)).toThrow(
-      new TypeError('Converting circular structure to JSON')
-    );
-  });
-
   // This verifies that the watch function works with a watchMap
   // which means it passes the correct state path values
   // as a props to a React component.

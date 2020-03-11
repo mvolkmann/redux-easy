@@ -14,13 +14,14 @@ class Select extends Component {
   };
 
   render() {
-    const {children, path} = this.props;
+    const {children, multiple, path} = this.props;
 
     let {value} = this.props;
     if (!value) value = getPath(path);
     if (value === undefined) value = '';
 
     const selectProps = {...this.props, value};
+    if (multiple) selectProps.multiple = true;
     delete selectProps.dispatch;
 
     return (
@@ -38,6 +39,7 @@ class Select extends Component {
 Select.propTypes = {
   action: string,
   children: node,
+  multiple: boolean,
   onChange: func,
   path: string,
   value: oneOfType([number, string])
