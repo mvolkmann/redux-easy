@@ -1,4 +1,4 @@
-import {bool, func, node, number, oneOfType, string} from 'prop-types';
+import {func, node, number, oneOfType, string} from 'prop-types';
 import React, {Component} from 'react';
 import {dispatch, dispatchSet, getPath, watch} from './redux-easy';
 
@@ -14,14 +14,13 @@ class Select extends Component {
   };
 
   render() {
-    const {children, multiple, path} = this.props;
+    const {children, path} = this.props;
 
     let {value} = this.props;
     if (!value) value = getPath(path);
     if (value === undefined) value = '';
 
     const selectProps = {...this.props, value};
-    if (multiple) selectProps.multiple = true;
     delete selectProps.dispatch;
 
     return (
@@ -39,7 +38,6 @@ class Select extends Component {
 Select.propTypes = {
   action: string,
   children: node,
-  multiple: bool,
   onChange: func,
   path: string,
   value: oneOfType([number, string])

@@ -56,7 +56,7 @@ add the following which assumes the topmost component is `App`:
 import React from 'react';
 import {reduxSetup} from 'redux-easy';
 import App from './App';
-import './reducers'; // described next
+import './reducers'; // if needed; see below
 
 const initialState = {
   user: {firstName: ''}
@@ -67,7 +67,8 @@ const initialState = {
 reduxSetup({component: <App />, initialState});
 ```
 
-Create `reducers.js` containing something like the following:
+If you need to implement reducers, and you probably don't,
+create `reducers.js` containing something like the following:
 
 ```js
 import {addReducer} from 'redux-easy';
@@ -201,8 +202,8 @@ it is only necessary to update these constants.
 It is common to have `input`, `select`, and `textarea` elements
 with `onChange` handlers that get their value from `event.target.value`
 and dispatch an action where the value is the payload.
-An alternative is to use the provided `Input`, `Select`, and `TextArea` components
-as follows:
+An alternative is to use the provided `Input`, `Select`, `MultiSelect`,
+and `TextArea` components as follows:
 
 HTML `input` elements can be replaced by the `Input` component.
 For example,
@@ -228,11 +229,20 @@ For example,
 <TextArea path="feedback.comment" />
 ```
 
-HTML `select` elements can be replaced by the `Select` component.
+HTML `select` elements can be replaced by
+the `Select` and `MultiSelect` components.
+The path value for a `Select` is a single value and
+the path value for a `MultiSelect` is an array of values.
 For example,
 
 ```js
 <Select path="user.favoriteColor">
+  <option>red</option>
+  <option>green</option>
+  <option>blue</option>
+</Select>
+
+<MultiSelect path="user.favoriteColors">
   <option>red</option>
   <option>green</option>
   <option>blue</option>
